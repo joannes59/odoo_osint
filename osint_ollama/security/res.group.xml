@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Update the ollama Manager group to use the new category -->
+    <record id="group_ollama_manager" model="res.groups">
+        <field name="name">LLM Manager</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
+    </record>
+
+    <!-- Make Settings/Admin group imply ollama Manager -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_ollama_manager'))]" />
+    </record>
+
+</odoo>

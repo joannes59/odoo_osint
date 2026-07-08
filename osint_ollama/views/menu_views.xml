@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_ollama_root"
+              name="Ollama IA"
+              web_icon="fa fa-robot"
+              sequence="10"/>
+</odoo>
