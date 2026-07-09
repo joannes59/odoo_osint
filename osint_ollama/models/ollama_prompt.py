@@ -21,6 +21,8 @@ class OllamaPrompt(models.Model):
     message_ids = fields.One2many('ollama.prompt.message', 'prompt_id', string='Messages')
     question = fields.Text('Question')
     response = fields.Text('Response')
+    keep_alive = fields.Text('keep alive', default="5m")
+
 
     @api.depends('model_id', 'message_ids', 'message_ids.role', 'message_ids.content')
     def _compute_name(self):
@@ -50,7 +52,11 @@ class OllamaPrompt(models.Model):
 
             client = ollama.Client(host=self.provider_id.host)
             messages = [{'role': msg.role, 'content': msg.content} for msg in self.message_ids]
-            response = client.chat(model=self.model_id.model, messages=messages)
+            response = client.chat(
+                model=self.model_id.model, 
+                messages=messages,
+                keep_alive=self.keep_alive)
+            
             reply = response['message']['content']
 
             self.write({
@@ -58,6 +64,10 @@ class OllamaPrompt(models.Model):
                 'message_ids': [(0, 0, {
                     'role': 'assistant',
                     'content': reply,
+                    'prompt_eval_count': response.prompt_eval_count,
+                    'eval_count': response.eval_count,
+                    'total_duration': response.total_duration / 1e9,
+                    
                 })],
             })
         except Exception as e:
@@ -76,7 +86,8 @@ class OllamaPromptMessage(models.Model):
     _description = 'Prompt Message'
     _order = 'sequence, id'
 
-    prompt_id = fields.Many2one('ollama.prompt', string='Prompt', required=True, ondelete='cascade')
+    prompt_id = fields.Many2one('ollama.prompt', string='Prompt',
+                                required=True, ondelete='cascade')
     sequence = fields.Integer('Sequence', default=10)
     role = fields.Selection([
         ('system', 'System'),
@@ -84,3 +95,10 @@ class OllamaPromptMessage(models.Model):
         ('assistant', 'Assistant'),
     ], string='Role', required=True, default='user')
     content = fields.Text('Content', required=True)
+    prompt_eval_count = fields.Float("Token in")
+    eval_count = fields.Float("Token")
+    total_duration = fields.Float("Duration")
+    
+    
+
+

@@ -8,7 +8,6 @@
                 <field name="name"/>
                 <field name="model_id"/>
                 <field name="provider_id"/>
-                <field name="response"/>
             </list>
         </field>
     </record>
@@ -35,6 +34,8 @@
                                 <field name="sequence" widget="handle"/>
                                 <field name="role"/>
                                 <field name="content"/>
+                                <field name="eval_count"/>                                
+                                <field name="total_duration"/>
                             </list>
                             <form>
                                 <group>
