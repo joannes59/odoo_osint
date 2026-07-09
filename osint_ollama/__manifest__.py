@@ -22,6 +22,7 @@
         'views/ollama_provider_views.xml',
         'views/ollama_model_views.xml',
         'views/ollama_model_capability_views.xml',
+        'views/ollama_prompt_views.xml',
 
     ],
     'installable': True,
