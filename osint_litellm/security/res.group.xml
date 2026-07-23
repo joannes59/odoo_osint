@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Update the litellm Manager group to use the new category -->
+    <record id="group_litellm_manager" model="res.groups">
+        <field name="name">LLM Manager</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]" />
+    </record>
+
+    <!-- Make Settings/Admin group imply litellm Manager -->
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_litellm_manager'))]" />
+    </record>
+
+</odoo>

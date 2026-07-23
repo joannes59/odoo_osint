@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_litellm_provider_user,litellm.provider.user,model_litellm_provider,base.group_user,1,0,0,0
+access_litellm_provider_manager,litellm.provider.manager,model_litellm_provider,group_litellm_manager,1,1,1,1
+access_litellm_model_user,litellm.model.user,model_litellm_model,base.group_user,1,0,0,0
+access_litellm_model_manager,litellm.model.manager,model_litellm_model,group_litellm_manager,1,1,1,1
+access_litellm_model_capability_user,litellm.model.capability.user,model_litellm_model_capability,base.group_user,1,0,0,0
+access_litellm_model_capability_manager,litellm.model.capability.manager,model_litellm_model_capability,group_litellm_manager,1,1,1,1
+access_litellm_prompt_user,litellm.prompt.user,model_litellm_prompt,base.group_user,1,0,0,0
+access_litellm_prompt_manager,litellm.prompt.manager,model_litellm_prompt,group_litellm_manager,1,1,1,1
+access_litellm_prompt_message_user,litellm.prompt.message.user,model_litellm_prompt_message,base.group_user,1,0,0,0
+access_litellm_prompt_message_manager,litellm.prompt.message.manager,model_litellm_prompt_message,group_litellm_manager,1,1,1,1
+
+

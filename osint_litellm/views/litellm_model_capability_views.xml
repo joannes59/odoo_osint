@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_litellm_model_capability_tree" model="ir.ui.view">
+        <field name="name">litellm.model.capability.tree</field>
+        <field name="model">litellm.model.capability</field>
+        <field name="arch" type="xml">
+            <list string="Capabilities">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_litellm_model_capability_form" model="ir.ui.view">
+        <field name="name">litellm.model.capability.form</field>
+        <field name="model">litellm.model.capability</field>
+        <field name="arch" type="xml">
+            <form string="Capability">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_litellm_model_capability_search" model="ir.ui.view">
+        <field name="name">litellm.model.capability.search</field>
+        <field name="model">litellm.model.capability</field>
+        <field name="arch" type="xml">
+            <search string="Search Capability">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_litellm_model_capability" model="ir.actions.act_window">
+        <field name="name">Capabilities</field>
+        <field name="res_model">litellm.model.capability</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_litellm_model_capability_search"/>
+    </record>
+
+    <menuitem id="menu_litellm_model_capability"
+              name="Capabilities"
+              parent="menu_litellm_root"
+              action="action_litellm_model_capability"
+              sequence="30"/>
+</odoo>
