@@ -22,7 +22,7 @@ class LitellmPrompt(models.Model):
     message_ids = fields.One2many('litellm.prompt.message', 'prompt_id', string='Messages')
     question = fields.Text('Question')
     response = fields.Text('Response')
-    keep_alive = fields.Text('keep alive', default="5m")
+    keep_alive = fields.Text('keep alive')
 
 
     @api.depends('model_id', 'message_ids', 'message_ids.role', 'message_ids.content')
@@ -52,10 +52,10 @@ class LitellmPrompt(models.Model):
                 })
 
             api_base = self.provider_id.host or None
-            model = self.model_id.provider_id.name + '/' + self.model_id.model
+            api_key = self.model_id.get_apikey() or None
+            model = (self.model_id.provider_id.name + '/' + self.model_id.model).lower()
             keep_alive = (self.model_id.provider_id.name == 'ollama') and '5m' or None
             
-
             
             messages = [{'role': msg.role, 'content': msg.content} for msg in self.message_ids]
             
@@ -63,6 +63,7 @@ class LitellmPrompt(models.Model):
             
             response = litellm.completion(
                 api_base=api_base,
+                api_key=api_key,
                 model=model, 
                 messages=messages,
                 keep_alive=keep_alive ,

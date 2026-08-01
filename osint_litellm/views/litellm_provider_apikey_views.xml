@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_litellm_provider_apikey_list" model="ir.ui.view">
+        <field name="name">litellm.provider.apikey.list</field>
+        <field name="model">litellm.provider.apikey</field>
+        <field name="arch" type="xml">
+            <list string="API Keys">
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="model_id"/>
+                <field name="user_ids" widget="many2many_tags"/>
+                <field name="group_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_litellm_provider_apikey_form" model="ir.ui.view">
+        <field name="name">litellm.provider.apikey.form</field>
+        <field name="model">litellm.provider.apikey</field>
+        <field name="arch" type="xml">
+            <form string="API Key">
+                <sheet>
+                    <group>
+                        <group string="Configuration">
+                            <field name="name"/>
+                            <field name="key"/>
+                        </group>
+                        <group string="Provider">
+                            <field name="provider_id"/>
+                            <field name="model_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Authorized Groups">
+                            <field name="group_ids"/>
+                        </group>
+                        <group string="Authorized Users">
+                            <field name="user_ids"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_litellm_provider_apikey_search" model="ir.ui.view">
+        <field name="name">litellm.provider.apikey.search</field>
+        <field name="model">litellm.provider.apikey</field>
+        <field name="arch" type="xml">
+            <search string="Search API Key">
+                <field name="name"/>
+                <field name="provider_id"/>
+                <field name="model_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_litellm_provider_apikey" model="ir.actions.act_window">
+        <field name="name">API Keys</field>
+        <field name="res_model">litellm.provider.apikey</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_litellm_provider_apikey_search"/>
+    </record>
+
+    <menuitem id="menu_litellm_provider_apikey"
+              name="API Keys"
+              parent="menu_litellm_root"
+              action="action_litellm_provider_apikey"
+              sequence="50"/>
+</odoo>

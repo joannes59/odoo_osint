@@ -22,6 +22,7 @@
         'views/litellm_provider_views.xml',
         'views/litellm_model_views.xml',
         'views/litellm_model_capability_views.xml',
+        'views/litellm_provider_apikey_views.xml',
         'views/litellm_prompt_views.xml',
 
     ],
