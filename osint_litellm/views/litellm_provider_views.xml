@@ -11,7 +11,7 @@
                 <field name="name"/>
                 <field name="litellm_provider"/>
                 <field name="api_type"/>
-                <field name="need_api_key"/>
+                <field name="host"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'confirm'" decoration-muted="state == 'draft'"/>
             </list>
         </field>
@@ -33,11 +33,11 @@
                             <field name="name"/>
                             <field name="litellm_provider"/>
                             <field name="api_type"/>
-                            <field name="need_api_key"/>
+
                         </group>
                         <group string="Connection">
                             <field name="host"/>
-                            <field name="api_address"/>
+                            <field name="need_api_key"/>
                         </group>
                     </group>
                     <notebook>

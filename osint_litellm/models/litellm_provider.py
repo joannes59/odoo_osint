@@ -24,11 +24,10 @@ class LitellmProvider(models.Model):
     _description = 'Provider server configuration'
 
     name = fields.Char('Name', required=True)
-    litellm_provider = fields.Selection(litellm_provider_list, string="Litellm provider", required=True, default="OLLAMA")
+    litellm_provider = fields.Selection(litellm_provider_list, string="configuration", required=True, default="OLLAMA")
 
     host = fields.Char('Host', required=False, 
                        help="For example, local ollama use this address: http://localhost:11434")
-    api_address = fields.Char('Api address', required=False, help="Address API of the provider")
     api_type = fields.Selection(
         [("ollama", "ollama"), ("openai", "openai"), ("gemini", "gemini")],
         string="API Type", default="openai",
@@ -107,31 +106,31 @@ class LitellmProvider(models.Model):
 
             model_data_list = data.get('models') or  data.get('data') or []
             
+            def model_data_get(model_data, field_list=[]):
+                """ return first value defined in the dic """
+                for field_name in field_list:                        
+                    if model_data.get(field_name):
+                        return model_data.get(field_name)
+                return False
+            
             for model_data in model_data_list:
-                
-                def model_data_get(field_list=[]):
-                    """ return first value defined in the dic """
-                    for field_name in field_list:                        
-                        if model_data.get(field_name):
-                            return model_data.get(field_name)
-                    return False
-                        
-                model = model_data_get(['model', 'id'])
-                name =  model_data_get(['name']) or model
+                     
+                model_key = model_data_get(model_data, ['model', 'id']) or '?'
+                name =  model_data_get(model_data, ['name']) or model_key
     
-                model = self.env['litellm.model'].search([
-                    ('model', '=', model),
+                model_ids = self.env['litellm.model'].search([
+                    ('model', '=', model_key),
                     ('provider_id', '=', self.id),
                 ], limit=1)
     
                 vals = {
                     'name':name,
-                    'model': model,
+                    'model': model_key,
                     'description': model_data,
                 }
 
-                if model:
-                    model.write(vals)
+                if model_ids:
+                    model_ids.write(vals)
                 else:
                     vals['provider_id'] = self.id
                     self.env['litellm.model'].create(vals)

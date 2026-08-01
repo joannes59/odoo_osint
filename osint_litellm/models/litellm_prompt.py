@@ -53,7 +53,7 @@ class LitellmPrompt(models.Model):
 
             api_base = self.provider_id.host or None
             api_key = self.model_id.get_apikey() or None
-            model = (self.model_id.provider_id.name + '/' + self.model_id.model).lower()
+            model = (self.model_id.provider_id.litellm_provider + '/' + self.model_id.model).lower()
             keep_alive = (self.model_id.provider_id.name == 'ollama') and '5m' or None
             
             
@@ -66,7 +66,7 @@ class LitellmPrompt(models.Model):
                 api_key=api_key,
                 model=model, 
                 messages=messages,
-                keep_alive=keep_alive ,
+                keep_alive=keep_alive,
                 )
             
             reply = response.choices[0].message.content
