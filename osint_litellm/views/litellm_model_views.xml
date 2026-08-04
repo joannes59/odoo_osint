@@ -5,12 +5,16 @@
         <field name="model">litellm.model</field>
         <field name="arch" type="xml">
             <list string="AI Models">
+                            <header>
+                               
+                                <button name="action_update_model_support" string="Update Model Support" type="object"/>
+                            </header>
                 <field name="name"/>
                 <field name="model"/>
                 <field name="provider_id"/>
                 <field name="family"/>
                 <field name="parameter_size"/>
-                <field name="quantization_level"/>
+                <field name="response_format"/>
                 <field name="context_length"/>
                 <field name="size" optional="show"/>
                 <field name="capability_ids" widget="many2many_tags" optional="show"/>
@@ -26,6 +30,7 @@
             <form string="AI Model">
                 <header>
                     <field name="state" widget="statusbar"/>
+                    <button name="action_update_model_support" string="Update Model Support" type="object"/>
                 </header>
                 <sheet>
                     <group>
@@ -53,9 +58,11 @@
                     </group>
                     <group string="Capabilities">
                         <field name="capability_ids"/>
+                        <field name="response_format"/>
+                        <field name="json_schema"/>
                     </group>
                     <group string="Description (JSON)">
-                        <field name="description" widget="text" readonly="1"/>
+                        <field name="description_pretty" widget="text"/>
                     </group>
                 </sheet>
             </form>
