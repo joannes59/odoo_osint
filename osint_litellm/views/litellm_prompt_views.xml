@@ -8,6 +8,7 @@
                 <field name="name"/>
                 <field name="model_id"/>
                 <field name="provider_id"/>
+                <field name="mcp_server_ids" widget="many2many_tags" optional="show"/>
             </list>
         </field>
     </record>
@@ -26,6 +27,10 @@
                         <group string="Configuration">
                             <field name="model_id"/>
                             <field name="provider_id"/>
+                        </group>
+                        <group string="MCP Servers">
+                            <field name="mcp_server_ids" widget="many2many_tags"/>
+                            <field name="mcp_tool_ids" widget="many2many_tags" readonly="1"/>
                         </group>
                     </group>
                     <group string="Messages">
@@ -56,6 +61,20 @@
                             <field name="response" colspan="2" nolabel="1"/>
                         </group>
                     </group>
+                    <group colspan="2">
+                        <group string="MCP Tool Calls">
+                            <field name="mcp_message_ids" colspan="2">
+                                <list string="MCP Tool Calls">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="tool_name"/>
+                                    <field name="arguments"/>
+                                    <field name="result"/>
+                                    <field name="error"/>
+                                    <field name="duration"/>
+                                </list>
+                            </field>
+                        </group>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -69,6 +88,7 @@
                 <field name="name"/>
                 <field name="model_id"/>
                 <field name="provider_id"/>
+                <field name="mcp_server_ids"/>
             </search>
         </field>
     </record>

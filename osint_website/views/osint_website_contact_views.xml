@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_osint_website_contact_list" model="ir.ui.view">
+        <field name="name">osint.website.contact.list</field>
+        <field name="model">osint.website.contact</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="create_date"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="company"/>
+                <field name="subject"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_osint_website_contact_form" model="ir.ui.view">
+        <field name="name">osint.website.contact.form</field>
+        <field name="model">osint.website.contact</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="create_date" readonly="1"/>
+                        <field name="name"/>
+                        <field name="email"/>
+                        <field name="phone"/>
+                        <field name="company"/>
+                        <field name="subject"/>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_osint_website_contact"
+            model="ir.actions.act_window">
+        <field name="name">Contact Requests</field>
+        <field name="res_model">osint.website.contact</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_osint_root"
+              name="OSINT"
+              web_icon="fa fa-robot"
+              sequence="10"/>
+
+    <menuitem
+        id="menu_osint_website_contact"
+        name="Contact Requests"
+        parent="menu_osint_root"
+        action="action_osint_website_contact"
+        sequence="10"/>
+
+
+</odoo>

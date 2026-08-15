@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_osint_website_contact_user,osint_website_contact user,model_osint_website_contact,base.group_user,1,1,1,1
