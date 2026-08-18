@@ -1,8 +1,8 @@
-"Name","configuration","API Type","Host"
-"Ollama.local","OLLAMA","ollama","http://localhost:11434"
-"Ollama","OLLAMA","ollama","https://ollama.com"
-"Groq","GROQ","openai","https://api.groq.com/openai/v1"
-"Openai","OPENAI","openai","https://api.openai.com/v1"
-"Mistral","MISTRAL","openai","https://api.mistral.ai/v1"
-"Deepseek","DEEPSEEK","openai","https://api.deepseek.com"
-"Openrouter","OPENROUTER","openai","https://openrouter.ai/api/v1"
+ID,name,litellm_provider,api_type,host
+id_provider_ollama_local,Ollama.local,OLLAMA,ollama,http://localhost:11434
+id_provider_ollama,Ollama,OLLAMA,ollama,https://ollama.com
+id_provider_groq,Groq,GROQ,openai,https://api.groq.com/openai/v1
+id_provider_openai,Openai,OPENAI,openai,https://api.openai.com/v1
+id_provider_mistral,Mistral,MISTRAL,openai,https://api.mistral.ai/v1
+id_provider_deepseek,Deepseek,DEEPSEEK,openai,https://api.deepseek.com
+id_provider_openrouter,Openrouter,OPENROUTER,openai,https://openrouter.ai/api/v1

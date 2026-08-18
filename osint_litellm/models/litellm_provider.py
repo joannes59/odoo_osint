@@ -3,7 +3,7 @@
 """
 Created on Wed Jul  8 19:10:31 2026
 
-@author: joannes
+@author: joannes.landy
 """
 
 import litellm
@@ -31,7 +31,7 @@ class LitellmProvider(models.Model):
     api_type = fields.Selection(
         [("ollama", "ollama"), ("openai", "openai"), ("gemini", "gemini")],
         string="API Type", default="openai",
-        help="Type of API, like authentification, function...")
+        help="Type of API, use to authentification, function...")
     need_api_key = fields.Boolean("Need API Key")
     model_ids = fields.One2many('litellm.model', 'provider_id', string='AI model')
     state = fields.Selection([
@@ -57,17 +57,16 @@ class LitellmProvider(models.Model):
         user = self.env.user
         api_key = None
         
-        domain = [
-            ('provider_id', '=', self.id),
-            '|',
-            ('user_ids', 'in', user.ids),
-            ('group_ids', 'in', user.group_ids.ids),
-        ]
+        domain_0 = [('provider_id', '=', self.id)]
+        domain_1 = domain_0 + [('user_ids', 'in', user.ids)]
+        domain_2 = domain_0 + [('group_ids', 'in', user.group_ids.ids)]
+            
+        for domain in [domain_1, domain_2]:
+            api_key_ids = self.env['litellm.provider.apikey'].search(domain)
         
-        api_key_ids = self.env['litellm.provider.apikey'].search(domain)
-        
-        if api_key_ids:
-            api_key = api_key_ids[0].key
+            if api_key_ids:
+                api_key = api_key_ids[0].key
+                break
 
         return api_key
               
@@ -81,11 +80,14 @@ class LitellmProvider(models.Model):
             url += '/api/tags'
         elif self.api_type == "openai":
             url += '/models'
+            
             api_key = self.get_apikey()
             if api_key:
                 headers["Authorization"] = f"Bearer {api_key}"
-            else:
-                raise UserError(f"You need a API Key for this provider: {self.name}")
+        else:
+            # TODO: add gemini and more
+            pass
+        
             
         response = requests.get(url, headers=headers, timeout=timeout)
         response.raise_for_status()
@@ -101,7 +103,7 @@ class LitellmProvider(models.Model):
                 response.raise_for_status()
                 data = response.json()
             except Exception as e:
-                #raise UserError(f"Failed to fetch models from {provider.name}")
+                raise UserError(f"Failed to fetch models from {provider.name}\n{e}")
                 data = {}
 
             model_data_list = data.get('models') or  data.get('data') or []

@@ -18,6 +18,9 @@
     'data': [
         'security/res.group.xml',
         'security/ir.model.access.csv',
+        
+        'datas/litellm.provider.csv',
+        
         'views/menu_views.xml',
         'views/litellm_provider_views.xml',
         'views/litellm_model_views.xml',
