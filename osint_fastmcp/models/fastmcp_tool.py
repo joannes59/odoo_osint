@@ -51,6 +51,18 @@ class FastMCPTool(models.Model):
         update['input_schema'] = getattr(tool, 'inputSchema', None)
         update['output_schema'] = getattr(tool, 'outputSchema', None)
         
+        annotations = None
+        ann = getattr(tool, 'annotations', None)
+        if ann is not None:
+            if hasattr(ann, 'model_dump'):          # Pydantic v2
+                annotations = ann.model_dump(exclude_none=True)
+            elif hasattr(ann, 'dict'):              # Pydantic v1
+                annotations = ann.dict(exclude_none=True)
+            elif isinstance(ann, dict):
+                annotations = ann
+        update['annotations'] = annotations
+        
+        
         self.write(update)
         
         
