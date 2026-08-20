@@ -7,3 +7,5 @@ access_fastmcp_resource_user,fastmcp.resource.user,model_fastmcp_resource,base.g
 access_fastmcp_resource_manager,fastmcp.resource.manager,model_fastmcp_resource,osint_litellm.group_litellm_manager,1,1,1,1
 access_fastmcp_prompt_user,fastmcp.prompt.user,model_fastmcp_prompt,base.group_user,1,0,0,0
 access_fastmcp_prompt_manager,fastmcp.prompt.manager,model_fastmcp_prompt,osint_litellm.group_litellm_manager,1,1,1,1
+access_fastmcp_server_apikey_user,fastmcp.server.apikey.user,model_fastmcp_server_apikey,base.group_user,1,0,0,0
+access_fastmcp_server_apikey_manager,fastmcp.server.apikey.manager,model_fastmcp_server_apikey,osint_litellm.group_litellm_manager,1,1,1,1

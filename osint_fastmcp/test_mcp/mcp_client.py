@@ -8,13 +8,18 @@ Created on Tue Aug 18 15:15:55 2026
 
 import asyncio
 from fastmcp import Client
+from fastmcp.client.auth import BearerAuth
 
 # In-memory server (ideal for testing)
 #server = FastMCP("TestServer")
 #client = Client(server)
 
 # HTTP server
-client = Client("http://127.0.0.1:8000/mcp")
+apikey=""
+client = Client("https://drivemcp.googleapis.com/mcp",
+auth=BearerAuth(token=apikey),
+)
+
 
 # Local Python script
 #client = Client("my_mcp_server.py")

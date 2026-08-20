@@ -23,6 +23,7 @@ class FastMCPServer(models.Model):
     server_url = fields.Char('Server URL', help="URL of the MCP server (http or sse transport).")
 
 
+    apikey_ids = fields.One2many('fastmcp.server.apikey', 'server_id', string='API Keys')
     tool_ids = fields.One2many('fastmcp.tool', 'mcp_server_id', string='Tools')
     resource_ids = fields.One2many('fastmcp.resource', 'mcp_server_id', string='Resources')
     prompt_ids = fields.One2many('fastmcp.prompt', 'mcp_server_id', string='Prompts')
@@ -43,7 +44,7 @@ class FastMCPServer(models.Model):
 
     @api.model
     def _run_async_mcp_fetch(self, server_url):
-        """Méthode interne pour exécuter le code asynchrone."""
+        """Internal method to execute asynchronous code."""
         async def main():
             client = fastmcp.Client(server_url)
             try:
@@ -62,20 +63,20 @@ class FastMCPServer(models.Model):
                     return result
                 
             except Exception as e:
-                _logger.error(f"Erreur de connexion au serveur MCP : {e}")
+                _logger.error(f"MCP server connection error: {e}")
                 return {'status': 'error', 'message': str(e)}
 
-        # Exécution de la boucle asynchrone dans le contexte synchrone d'Odoo
+        # Execute the async loop within Odoo's synchronous context
         return asyncio.run(main())
 
     def action_fetch_metadata(self):
-        """Action déclenchée par le bouton pour récupérer les métadonnées."""
+        """Action triggered by the button to retrieve metadata."""
         self.ensure_one()
         
         if not self.server_url:
-            raise UserError("Veuillez configurer une URL de serveur MCP valide.")
+            raise UserError("Please configure a valid MCP server URL.")
 
-        _logger.info(f"Connexion au serveur MCP : {self.server_url}")
+        _logger.info(f"Connecting to MCP server: {self.server_url}")
         result = self._run_async_mcp_fetch(self.server_url)
 
         if result['status'] == 'success':
@@ -88,7 +89,7 @@ class FastMCPServer(models.Model):
                 
                 
         else:
-            raise UserError(f"Échec de la récupération des données MCP : {result['message']}")
+            raise UserError(f"Failed to retrieve MCP data: {result['message']}")
 
     def action_sync_capabilities(self):
         """ Fetch tools, resources and prompts from the MCP server."""

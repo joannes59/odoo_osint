@@ -3,7 +3,7 @@ from pathlib import Path
 from fastmcp import FastMCP
 
 
-# Répertoire autorisé
+# Authorized directory
 ROOT = Path.home() #/ "mcp-test" / "files"
 ROOT.mkdir(parents=True, exist_ok=True)
 
@@ -11,22 +11,22 @@ mcp = FastMCP("Filesystem")
 
 
 def safe_path(path: str) -> Path:
-    """Empêche de sortir du répertoire ROOT."""
+    """Prevents escaping the ROOT directory."""
     target = (ROOT / path).resolve()
 
     if not target.is_relative_to(ROOT.resolve()):
-        raise ValueError("Accès interdit en dehors du répertoire autorisé")
+        raise ValueError("Access forbidden outside the authorized directory")
 
     return target
 
 
 @mcp.tool()
 def list_files(path: str = ".") -> list[str]:
-    """Liste les fichiers et répertoires."""
+    """Lists files and directories."""
     directory = safe_path(path)
 
     if not directory.is_dir():
-        raise ValueError("Ce n'est pas un répertoire")
+        raise ValueError("This is not a directory")
 
     return [
         item.name
@@ -36,37 +36,37 @@ def list_files(path: str = ".") -> list[str]:
 
 @mcp.tool()
 def read_file(path: str) -> str:
-    """Lit le contenu d'un fichier texte."""
+    """Reads the content of a text file."""
     file = safe_path(path)
 
     if not file.is_file():
-        raise ValueError("Fichier introuvable")
+        raise ValueError("File not found")
 
     return file.read_text(encoding="utf-8")
 
 
 @mcp.tool()
 def write_file(path: str, content: str) -> str:
-    """Écrit un fichier texte."""
+    """Writes a text file."""
     file = safe_path(path)
 
     file.parent.mkdir(parents=True, exist_ok=True)
     file.write_text(content, encoding="utf-8")
 
-    return f"Fichier écrit : {path}"
+    return f"File written: {path}"
 
 
 @mcp.tool()
 def delete_file(path: str) -> str:
-    """Supprime un fichier."""
+    """Deletes a file."""
     file = safe_path(path)
 
     if not file.is_file():
-        raise ValueError("Fichier introuvable")
+        raise ValueError("File not found")
 
     file.unlink()
 
-    return f"Fichier supprimé : {path}"
+    return f"File deleted: {path}"
 
 
 if __name__ == "__main__":

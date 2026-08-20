@@ -36,6 +36,24 @@
                     </group>
 
                     <notebook>
+                        <page string="API Keys">
+                            <field name="apikey_ids">
+                                <list string="API Keys">
+                                    <field name="name"/>
+                                    <field name="key"/>
+                                    <field name="user_ids" widget="many2many_tags"/>
+                                    <field name="group_ids" widget="many2many_tags"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="name"/>
+                                        <field name="key"/>
+                                        <field name="user_ids" widget="many2many_tags"/>
+                                        <field name="group_ids" widget="many2many_tags"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
                         <page string="Tools">
                             <field name="tool_ids">
                                 <list string="MCP Tools">
