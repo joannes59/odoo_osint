@@ -49,17 +49,27 @@ class FastMCPServer(models.Model):
             client = fastmcp.Client(server_url)
             try:
                 async with client:
-                    tools = await client.list_tools()
-                    resources = await client.list_resources()
-                    prompts = await client.list_prompts()
+                    result = {}
+                    try:
+                        result['tools'] = await client.list_tools()
+                    except:
+                        pass
                     
-                    result =  {
-                        'status': 'success',
-                        'tools': tools,
-                        'resources': resources,
-                        'prompts': prompts,
-                    }
-       
+                    try:
+                        result['resources'] = await client.list_resources()
+                    except:
+                        pass
+                    
+                    try:
+                        result['prompts'] = await client.list_prompts()
+                    except:
+                        pass
+                    
+                    if result:
+                        result['status'] = 'success'
+                    else:
+                        result = {'status': 'error'}
+                
                     return result
                 
             except Exception as e:

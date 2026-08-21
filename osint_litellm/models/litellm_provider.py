@@ -31,7 +31,7 @@ class LitellmProvider(models.Model):
     api_type = fields.Selection(
         [("ollama", "ollama"), ("openai", "openai"), ("gemini", "gemini")],
         string="API Type", default="openai",
-        help="Type of API, use to authentification, function...")
+        help="Type of API, used for authentication, functions...")
     need_api_key = fields.Boolean("Need API Key")
     model_ids = fields.One2many('litellm.model', 'provider_id', string='AI model')
     state = fields.Selection([
@@ -71,7 +71,7 @@ class LitellmProvider(models.Model):
         return api_key
               
     def get_models(self, timeout=30):
-        """ Get modeles availables on provider. """
+        """ Get models available on provider. """
         self.ensure_one()
         url = self.host.rstrip('/')
         headers={}
