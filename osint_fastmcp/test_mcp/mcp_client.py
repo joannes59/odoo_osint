@@ -8,7 +8,8 @@ Created on Tue Aug 18 15:15:55 2026
 import asyncio
 from fastmcp import Client
 
-
+# docker run --rm -p 3000:3000   --add-host=host.docker.internal:host-gateway   -e MCP_HTTP_PORT=3000   -e MCP_HTTP_HOST=0.0.0.0   -e SEARXNG_URL=http://host.docker.internal:8080   isokoliuk/mcp-searxng:latest
+# docker run -d   --name web-search-mcp   -p 3000:3000   -e ENABLE_CORS=true   -e CORS_ORIGIN=*   ghcr.io/aas-ee/open-web-search:latest
 host = "http://127.0.0.1:3000/mcp"
 
 
@@ -24,6 +25,7 @@ async def main():
             print("\nTOOLS:")
             for tool in tools:
                 print(f"  {tool.name}: {tool.description}")
+                print(type(tool.inputSchema))
 
         except Exception as e:
             print(f"\nTOOLS indisponibles: {e}")

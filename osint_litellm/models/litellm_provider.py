@@ -25,6 +25,7 @@ class LitellmProvider(models.Model):
 
     name = fields.Char('Name', required=True)
     litellm_provider = fields.Selection(litellm_provider_list, string="configuration", required=True, default="OLLAMA")
+    keep_alive = fields.Char('Keep alive')
 
     host = fields.Char('Host', required=False, 
                        help="For example, local ollama use this address: http://localhost:11434")

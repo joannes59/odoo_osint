@@ -36,24 +36,6 @@
                     </group>
 
                     <notebook>
-                        <page string="API Keys">
-                            <field name="apikey_ids">
-                                <list string="API Keys">
-                                    <field name="name"/>
-                                    <field name="key"/>
-                                    <field name="user_ids" widget="many2many_tags"/>
-                                    <field name="group_ids" widget="many2many_tags"/>
-                                </list>
-                                <form>
-                                    <group>
-                                        <field name="name"/>
-                                        <field name="key"/>
-                                        <field name="user_ids" widget="many2many_tags"/>
-                                        <field name="group_ids" widget="many2many_tags"/>
-                                    </group>
-                                </form>
-                            </field>
-                        </page>
                         <page string="Tools">
                             <field name="tool_ids">
                                 <list string="MCP Tools">
@@ -65,7 +47,7 @@
                                         <field name="name"/>
                                         <field name="title"/>
                                         <field name="description"/>
-                                        <field name="input_schema"/>
+                                        <field name="input_schema_pretty"/>
                                         <field name="output_schema"/>
                                     </group>
                                 </form>
@@ -101,6 +83,24 @@
                                         <field name="title"/>
                                         <field name="description"/>
                                         <field name="arguments"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="API Keys">
+                            <field name="apikey_ids">
+                                <list string="API Keys">
+                                    <field name="name"/>
+                                    <field name="apikey"/>
+                                    <field name="user_ids" widget="many2many_tags"/>
+                                    <field name="group_ids" widget="many2many_tags"/>
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="name"/>
+                                        <field name="apikey"/>
+                                        <field name="user_ids" widget="many2many_tags"/>
+                                        <field name="group_ids" widget="many2many_tags"/>
                                     </group>
                                 </form>
                             </field>

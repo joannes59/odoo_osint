@@ -25,19 +25,24 @@ class LitellmPrompt(models.Model):
     keep_alive = fields.Text('keep alive')
 
 
-    @api.depends('model_id', 'message_ids', 'message_ids.role', 'message_ids.content')
+    @api.depends('message_ids', 'message_ids.role', 'message_ids.content')
     def _compute_name(self):
         for record in self:
-            parts = []
-            for msg in record.message_ids:
+            len_content = 120
+            if record.message_ids:
+                msg = record.message_ids[-1]
                 content = msg.content or ''
-                if len(content) > 40:
-                    content = content[:40] + '...'
-                parts.append("[%s] %s" % (msg.role, content))
-            if parts:
-                record.name = "%s - %s" % (record.model_id.name, ' | '.join(parts))
+                if len(content) > len_content:
+                    content = content[:len_content] + '...'
+                    
+                record.name = "[%s] %s" % (msg.role, content)
+
             else:
-                record.name = record.model_id.name
+                record.name = ""
+
+    def get_tools(self):
+        """ Get the tools available """
+        return []
 
     def action_send(self):
         self.ensure_one()
@@ -52,26 +57,32 @@ class LitellmPrompt(models.Model):
                 })
 
             api_base = self.provider_id.host or None
-            api_key = self.model_id.get_apikey() or None
+            api_key = self.provider_id.get_apikey() or None
             model = (self.model_id.provider_id.litellm_provider + '/' + self.model_id.model).lower()
-            keep_alive = (self.model_id.provider_id.name == 'ollama') and '5m' or None
-            
-            
+            keep_alive = (self.model_id.provider_id.litellm_provider == 'OLLAMA') and '5m' or None
+            tools = self.get_tools() or None       
+            tool_choice = tools and "auto" or None
             messages = [{'role': msg.role, 'content': msg.content} for msg in self.message_ids]
             
             start_time = time.time()
+            
+            print(tool_choice, tools)
             
             response = litellm.completion(
                 api_base=api_base,
                 api_key=api_key,
                 model=model, 
                 messages=messages,
+                tools=tools,
+                tool_choice=tool_choice,
                 keep_alive=keep_alive,
                 )
             
             reply = response.choices[0].message.content
+            tool_calls = response.choices[0].message.tool_calls
             usage = response.usage
-
+            
+            print('------------------------\n', tool_calls)
 
             self.write({
                 'response': reply,
@@ -81,8 +92,6 @@ class LitellmPrompt(models.Model):
                     'prompt_eval_count': usage.prompt_tokens,
                     'eval_count': usage.total_tokens,
                     'total_duration': time.time() - start_time,
-
-                    
                 })],
             })
         except Exception as e:
@@ -96,25 +105,7 @@ class LitellmPrompt(models.Model):
         }
 
 
-class LitellmPromptMessage(models.Model):
-    _name = 'litellm.prompt.message'
-    _description = 'Prompt Message'
-    _order = 'sequence, id'
 
-    prompt_id = fields.Many2one('litellm.prompt', string='Prompt',
-                                required=True, ondelete='cascade')
-    sequence = fields.Integer('Sequence', default=10)
-    role = fields.Selection([
-        ('system', 'System'),
-        ('user', 'User'),
-        ('assistant', 'Assistant'),
-    ], string='Role', required=True, default='user')
-    content = fields.Text('Content', required=True)
-    prompt_eval_count = fields.Float("Token in")
-    eval_count = fields.Float("Total Token")
-    cost = fields.Float("Cost")
-    total_duration = fields.Float("Duration")
-    
     
 
 

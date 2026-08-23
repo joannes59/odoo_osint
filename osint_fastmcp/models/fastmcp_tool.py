@@ -2,6 +2,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 from odoo import api, fields, models
+import json
 
 
 class FastMCPTool(models.Model):
@@ -17,6 +18,26 @@ class FastMCPTool(models.Model):
     input_schema = fields.Json('Input Schema')
     output_schema = fields.Json('Output Schema')
     annotations = fields.Json('Annotations')
+    
+    enabled = fields.Boolean('Enabled', default=True)
+    
+    input_schema_pretty = fields.Text(string="Input Schema", compute="_json_pretty")
+
+    @api.depends("input_schema")
+    def _json_pretty(self):
+        """ Return json in human readable text """
+        
+        for rec in self:
+            input_schema_pretty = ""
+            
+            if rec.input_schema:
+                input_schema_pretty = json.dumps(
+                        rec.input_schema,
+                        indent=4,
+                        ensure_ascii=False
+                    )
+            rec.input_schema_pretty = input_schema_pretty
+    
     
     @api.model
     def get_tool_id(self, mcp_server_id, name):
@@ -62,12 +83,25 @@ class FastMCPTool(models.Model):
                 annotations = ann
         update['annotations'] = annotations
         
-        
         self.write(update)
         
-        
-        
-        
+    def get_llm_schema(self):
+        """ return tools schema in llm client format. """
+        result = []
+
+        for tool in self:
+            result.append({
+                "type": "function",
+                "function": {
+                    "name": tool.name,
+                    "description": tool.description or "",
+                    "parameters": tool.input_schema or {
+                        "type": "object", "properties": {}},
+                }
+            })
+        return result
+                        
+            
         
     
     

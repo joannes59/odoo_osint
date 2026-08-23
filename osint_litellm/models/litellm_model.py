@@ -59,29 +59,6 @@ class LitellmModel(models.Model):
                     )
             rec.description_pretty = description_pretty
                     
-    def get_apikey(self):
-        """ Return api key to use with this model, depend on user """
-        self.ensure_one()
-        user = self.env.user
-        api_key = None
-        
-        domain = [
-            ('provider_id', '=', self.provider_id.id),
-            '|',
-            ('model_id', '=', False),
-            ('model_id', '=', self.id),
-            '|',
-            ('user_ids', 'in', user.ids),
-            ('group_ids', 'in', user.group_ids.ids),
-        ]
-        
-        api_key_ids = self.env['litellm.provider.apikey'].search(domain)
-        
-        if api_key_ids:
-            api_key = api_key_ids[0].key
-
-        return api_key
-
     def action_update_model_support(self):
         """ Update response_format and json_schema fields from litellm."""
 

@@ -1,4 +1,4 @@
-ID,name,litellm_provider,api_type,host
+id,name,litellm_provider,api_type,host
 id_provider_ollama_local,Ollama.local,OLLAMA,ollama,http://localhost:11434
 id_provider_ollama,Ollama,OLLAMA,ollama,https://ollama.com
 id_provider_groq,Groq,GROQ,openai,https://api.groq.com/openai/v1

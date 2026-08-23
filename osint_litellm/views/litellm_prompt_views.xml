@@ -23,7 +23,7 @@
                 </header>
                 <sheet>
                     <group>
-                        <group string="Configuration">
+                        <group name="configuration" string="Configuration">
                             <field name="model_id"/>
                             <field name="provider_id"/>
                         </group>

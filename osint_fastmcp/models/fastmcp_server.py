@@ -2,7 +2,6 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 
 
-import json
 import logging
 
 from odoo import api, fields, models
@@ -21,9 +20,8 @@ class FastMCPServer(models.Model):
 
     name = fields.Char('Name', required=True)
     server_url = fields.Char('Server URL', help="URL of the MCP server (http or sse transport).")
-
-
     apikey_ids = fields.One2many('fastmcp.server.apikey', 'server_id', string='API Keys')
+    
     tool_ids = fields.One2many('fastmcp.tool', 'mcp_server_id', string='Tools')
     resource_ids = fields.One2many('fastmcp.resource', 'mcp_server_id', string='Resources')
     prompt_ids = fields.One2many('fastmcp.prompt', 'mcp_server_id', string='Prompts')
@@ -34,13 +32,21 @@ class FastMCPServer(models.Model):
     
     active = fields.Boolean('Active', default=True)
 
+    def get_tools(self):
+        """ return all tools in llm client schema """
+        # https://modelcontextprotocol.io/specification/2026-07-28/server/tools
+        
+        result = []
+        for tool in self.tool_ids:
+            result += tool.get_llm_schema()
+        return result
+
     @api.depends('tool_ids', 'resource_ids', 'prompt_ids')
     def _compute_capability_count(self):
         for record in self:
             record.tool_count = len(record.tool_ids)
             record.resource_count = len(record.resource_ids)
             record.prompt_count = len(record.prompt_ids)
-
 
     @api.model
     def _run_async_mcp_fetch(self, server_url):
@@ -53,17 +59,17 @@ class FastMCPServer(models.Model):
                     try:
                         result['tools'] = await client.list_tools()
                     except:
-                        pass
+                        result['tools'] = []
                     
                     try:
                         result['resources'] = await client.list_resources()
                     except:
-                        pass
+                        result['resources'] = []
                     
                     try:
                         result['prompts'] = await client.list_prompts()
                     except:
-                        pass
+                        result['prompts'] = []
                     
                     if result:
                         result['status'] = 'success'
@@ -92,22 +98,12 @@ class FastMCPServer(models.Model):
         if result['status'] == 'success':
             for tool in result['tools']:
                 name = getattr(tool, 'name', None)
-                if not name:
-                    continue
-                tool_id = self.tool_ids.get_tool_id(self.id, name)
-                tool_id.update_info(tool)
+                if name:
+                    tool_id = self.tool_ids.get_tool_id(self.id, name)
+                    tool_id.update_info(tool)
                 
-                
+            # TODO: get resources and prompts
         else:
             raise UserError(f"Failed to retrieve MCP data: {result['message']}")
 
-    def action_sync_capabilities(self):
-        """ Fetch tools, resources and prompts from the MCP server."""
 
-
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'fastmcp.server',
-            'res_id': self.ids and self.ids[0] or False,
-            'view_mode': 'form',
-        }
