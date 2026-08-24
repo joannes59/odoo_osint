@@ -102,7 +102,17 @@ class FastMCPServer(models.Model):
                     tool_id = self.tool_ids.get_tool_id(self.id, name)
                     tool_id.update_info(tool)
                 
-            # TODO: get resources and prompts
+            for resource in result['resources']:
+                uri = getattr(resource, 'uri', None)
+                if uri:
+                    resource_id = self.resource_ids.get_resource_id(self.id, str(uri))
+                    resource_id.update_info(resource)
+                
+            for prompt in result['prompts']:
+                name = getattr(prompt, 'name', None)
+                if name:
+                    prompt_id = self.prompt_ids.get_prompt_id(self.id, name)
+                    prompt_id.update_info(prompt)
         else:
             raise UserError(f"Failed to retrieve MCP data: {result['message']}")
 

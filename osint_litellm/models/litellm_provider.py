@@ -30,7 +30,7 @@ class LitellmProvider(models.Model):
     host = fields.Char('Host', required=False, 
                        help="For example, local ollama use this address: http://localhost:11434")
     api_type = fields.Selection(
-        [("ollama", "ollama"), ("openai", "openai"), ("gemini", "gemini")],
+        [("ollama", "ollama"), ("openai", "openai"), ('ovhcloud', 'ovhcloud'), ("gemini", "gemini")],
         string="API Type", default="openai",
         help="Type of API, used for authentication, functions...")
     need_api_key = fields.Boolean("Need API Key")
@@ -72,24 +72,50 @@ class LitellmProvider(models.Model):
         return api_key
               
     def get_models(self, timeout=30):
-        """ Get models available on provider. """
+        """ Get models available on provider. Use API provider
+        all provider are not tested and use openai api format by default
+        """
+        
         self.ensure_one()
-        url = self.host.rstrip('/')
+        url = self.host and self.host.rstrip('/') or ''
         headers={}
-         
-        if self.api_type == "ollama":
+        provider = self.litellm_provider.lower()
+        
+        # Search the host in litellm data, 
+        if not url:
+            for model_name, info in litellm.model_cost.items():
+                if model_name.startswith(provider + "/"):
+                    model_name, provider, api_key, api_base = litellm.get_llm_provider(model=model_name)
+                    if api_base:
+                        url = api_base
+                        break
+
+        if self.litellm_provider == 'OVHCLOUD':
+            url = "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/models"
+            
+        elif self.litellm_provider in ['ANTHROPIC', 'ANTHROPIC_TEXT']:
+            url = "https://api.anthropic.com/v1/models"
+            api_key = self.get_apikey()
+            headers["X-Api-Key"] = api_key
+            
+        elif not url:
+            raise UserError(f"Configure the host of the provider.")
+                
+        elif self.api_type == "ollama":
             url += '/api/tags'
+            
         elif self.api_type == "openai":
             url += '/models'
             
             api_key = self.get_apikey()
             if api_key:
                 headers["Authorization"] = f"Bearer {api_key}"
+                
         else:
             # TODO: add gemini and more
             pass
         
-            
+
         response = requests.get(url, headers=headers, timeout=timeout)
         response.raise_for_status()
         return response    
