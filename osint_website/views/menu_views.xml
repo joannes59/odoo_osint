@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_website_root"
+              name="Websites"
+              web_icon="fa fa-globe"
+              sequence="30"/>
+</odoo>

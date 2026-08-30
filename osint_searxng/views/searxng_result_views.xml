@@ -5,12 +5,11 @@
         <field name="model">searxng.result</field>
         <field name="arch" type="xml">
             <list string="Search Results">
+                <field name="website_id"/>
                 <field name="title"/>
-                <field name="url" widget="url"/>
-                <field name="engine"/>
                 <field name="category"/>
+                <field name="content"/>
                 <field name="score"/>
-                <field name="published_date"/>
                 <field name="query_id"/>
             </list>
         </field>
@@ -22,33 +21,35 @@
         <field name="arch" type="xml">
             <form string="Search Result">
                 <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="title" placeholder="Title of the page ..." readonly="1"/>
+                        </h1>
+                        <field name="content" readonly="1"/>
+                    </div>
                     <group>
-                        <group string="Result">
-                            <field name="title"/>
-                            <field name="url" widget="url"/>
-                            <field name="content"/>
-                        </group>
-                        <group string="Metadata">
-                            <field name="engine"/>
-                            <field name="category"/>
-                            <field name="template"/>
-                            <field name="score"/>
-                            <field name="priority"/>
-                            <field name="published_date"/>
-                        </group>
+                        <field name="url_id" readonly="1"/>
+                        <field name="query_id" readonly="1"/>
                     </group>
-                    <group>
-                        <group string="Media">
-                            <field name="thumbnail"/>
-                            <field name="img_src"/>
-                        </group>
-                        <group string="Technical">
-                            <field name="query_id"/>
-                            <field name="engines" widget="json"/>
-                            <field name="parsed_url" widget="json"/>
-                            <field name="positions" widget="json"/>
-                        </group>
-                    </group>
+                    
+                    <notebook>
+                        <page string="Media" name="media">
+                            <group>
+                                <field name="thumbnail"/>
+                                <field name="img_src"/>
+                            </group>        
+                        </page>
+                        <page string="Metadata" name="metadata">
+                                <group string="Metadata">
+                                    <field name="engine"/>
+                                    <field name="category"/>
+                                    <field name="score"/>
+                                    <field name="priority"/>
+                                    <field name="published_date"/>
+                                </group>
+                        </page>
+                    </notebook>
+                
                 </sheet>
             </form>
         </field>

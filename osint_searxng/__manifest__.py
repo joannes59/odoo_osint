@@ -9,7 +9,7 @@
         perform web searches, and keep a persistent history of all queries 
         and their results directly within the Odoo interface.
     """,
-    'depends': ['base'],
+    'depends': ['base', 'osint_website'],
     'data': [
         'security/res.group.xml',
         'security/ir.model.access.csv',

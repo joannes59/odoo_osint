@@ -14,23 +14,17 @@ class SearxngResult(models.Model):
     _description = 'SearxNG search result'
     _order = 'score desc, published_date desc' 
 
-    query_id = fields.Many2one('searxng.query', string='Query', required=True)
-
-    # Champs de base
-    url = fields.Char(
-        string='URL', 
-        required=True, 
-        index=True,
-        help="Lien direct vers le résultat de recherche."
-    )
+    query_id = fields.Many2one('searxng.query', string='Query', required=True)    
+    url_id = fields.Many2one('osint.url', string='URL')
+    website_id = fields.Many2one('osint.website', string="Website",
+                                 related="url_id.website_id")
+    
     title = fields.Char(
         string='Titre', 
-        required=True, 
         index=True
     )
     content = fields.Html(
         string='Contenu / Extrait', 
-        required=True,
         help="Extrait du contenu. Utilise le type Html pour conserver le formatage (gras, etc.) des moteurs de recherche."
     )
     
@@ -47,7 +41,6 @@ class SearxngResult(models.Model):
     # Métadonnées du moteur de recherche
     engine = fields.Char(
         string='Moteur principal', 
-        required=True
     )
     engines = fields.Json(
         string='Liste des moteurs',
@@ -55,18 +48,12 @@ class SearxngResult(models.Model):
     )
     template = fields.Char(
         string='Template', 
-        required=True
     )
     category = fields.Char(
         string='Catégorie', 
-        required=True
     )
     
     # Données techniques et scores
-    parsed_url = fields.Json(
-        string='URL analysée',
-        help="Détails de l'URL découpée (mappé depuis list[str])."
-    )
     priority = fields.Char(
         string='Priorité',
         help="Priorité du résultat (souvent une chaîne comme 'high', 'medium')."
@@ -79,6 +66,9 @@ class SearxngResult(models.Model):
         string='Score', 
         required=True,
         index=True
+    )
+    delay =  fields.Float(
+        string='delay (S)', 
     )
 
     # Dates

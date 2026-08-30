@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_osint_website_user,osint.website.user,model_osint_website,base.group_user,1,0,0,0
+access_osint_website_manager,osint.website.manager,model_osint_website,group_website_manager,1,1,1,1
+access_osint_url_user,osint.url.user,model_osint_url,base.group_user,1,0,0,0
+access_osint_url_manager,osint.url.manager,model_osint_url,group_website_manager,1,1,1,1

@@ -11,27 +11,27 @@ from odoo import models, fields, api
 
 class OsintWebsite(models.Model):
     _name = 'osint.website'
-    _description = 'Site Web / Domaine'
+    _description = 'Website / Domain'
     _order = 'name'
 
     name = fields.Char(
-        string='Nom de domaine', 
+        string='website', 
         required=True, 
         index=True,
-        help="Ex: www.wikipedia.org"
+        help="Ex: flipboard.com"
     )
     url_ids = fields.One2many(
         'osint.url', 
         'website_id', 
-        string='URLs du site'
+        string='Website URLs'
     )
     url_count = fields.Integer(
-        string='Nombre d\'URLs', 
+        string='Number of URLs', 
         compute='_compute_url_count'
     )
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Ce nom de domaine existe déjà !')
+        ('name_uniq', 'unique(name)', 'This domain name already exists!')
     ]
 
     @api.depends('url_ids')
