@@ -71,16 +71,13 @@ class LitellmModel(models.Model):
                     custom_llm_provider=custom_llm_provider,
                 )
                 model.response_format = 'response_format' in params
-                print(model.model,type(params), params)
-                
+
                 info = get_model_info(
                     model=model.model,
                     custom_llm_provider=custom_llm_provider,
                     )
-                print('-------------------------')
-                print(info)
-                
-                
+
+            
             except Exception as e:
                 raise UserError("Failed to get supported params: %s" % str(e))
     

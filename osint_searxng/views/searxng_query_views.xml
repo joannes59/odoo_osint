@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_searxng_query_list" model="ir.ui.view">
+        <field name="name">searxng.query.list</field>
+        <field name="model">searxng.query</field>
+        <field name="arch" type="xml">
+            <list string="Search Queries">
+                <field name="name"/>
+                <field name="server_id"/>
+                <field name="categories"/>
+                <field name="language"/>
+                <field name="time_range"/>
+                <field name="result_count"/>
+                <field name="top_result_title"/>
+                <field name="top_result_url"/>
+   
+            </list>
+        </field>
+    </record>
+
+    <record id="view_searxng_query_form" model="ir.ui.view">
+        <field name="name">searxng.query.form</field>
+        <field name="model">searxng.query</field>
+        <field name="arch" type="xml">
+            <form string="Search Query">
+                <sheet>
+   
+                        <group string="Query">
+                            <field name="name"/>                    
+                            <button name="action_send" string="Send" 
+                            type="object"
+                            class="btn-primary"/>
+                           
+                        </group>
+
+
+                    <notebook>
+                        <page string="Results" name="results">
+                            <field name="result_ids">
+                                <list>
+                                    <field name="title"/>
+                                    <field name="url"/>
+                                    <field name="engine"/>
+                                    <field name="category"/>
+                                    <field name="score"/>
+                                    <field name="published_date"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Summary" name="summary">
+                            <group>
+                                <field name="top_result_title"/>
+                                <field name="top_result_url"/>
+                                <field name="result_count"/>
+                            </group>
+                        </page>
+                        <page string="Parameters" name="parameters">
+                            <group>
+                                <field name="categories"/>
+                                <field name="language"/>
+                                <field name="time_range"/>
+                                <field name="server_id"/>
+                            </group>
+                        </page>
+                        
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="action_searxng_query" model="ir.actions.act_window">
+        <field name="name">Search Queries</field>
+        <field name="res_model">searxng.query</field>
+        <field name="view_mode">list,form</field>
+
+    </record>
+
+    <menuitem id="menu_searxng_query"
+              name="Queries"
+              parent="menu_searxng_root"
+              action="action_searxng_query"
+              sequence="20"/>
+</odoo>
