@@ -30,10 +30,6 @@ class OsintWebsite(models.Model):
         compute='_compute_url_count'
     )
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'This domain name already exists!')
-    ]
-
     @api.depends('url_ids')
     def _compute_url_count(self):
         for website in self:
