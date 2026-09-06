@@ -18,11 +18,7 @@ class MailMessage(models.Model):
         messages = super().create(vals_list)
 
         for message in messages:
-            # Pour l'instant : logique très simple
-            print('---create----------', self.env.context)
-
-                
-            
             pass
 
         return messages
+    

@@ -12,11 +12,6 @@
     'data': [
         'views/res_users_views.xml',
         ],
-    "assets": {
-    "web.assets_backend": [
-        "osint_agent/static/src/services/browser_context.js",
-        ],
-    },
     'installable': True,
     'license': 'LGPL-3',
 }

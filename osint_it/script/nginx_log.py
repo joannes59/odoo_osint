@@ -5,7 +5,7 @@ Created on Tue Sep  1 17:58:45 2026
 
 @author: joannes
 """
-# TODO
+# TODO (in progress)
 from dataclasses import dataclass
 from datetime import datetime
 import re
