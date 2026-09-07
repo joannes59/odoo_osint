@@ -34,6 +34,7 @@
                                 <field name="sequence" widget="handle"/>
                                 <field name="role"/>
                                 <field name="content"/>
+                                <field name="tool_calls"/>
                                 <field name="eval_count"/>                                
                                 <field name="total_duration"/>
                             </list>
@@ -41,6 +42,7 @@
                                 <group>
                                     <field name="role"/>
                                     <field name="content"/>
+                                    <field name="tool_calls"/>
                                 </group>
                             </form>
                         </field>

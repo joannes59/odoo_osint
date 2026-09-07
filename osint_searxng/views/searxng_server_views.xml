@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_searxng_server_list" model="ir.ui.view">
+        <field name="name">searxng.server.list</field>
+        <field name="model">searxng.server</field>
+        <field name="arch" type="xml">
+            <list string="SearxNG Servers">
+                <field name="name"/>
+                <field name="base_url"/>
+                <field name="timeout"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_searxng_server_form" model="ir.ui.view">
+        <field name="name">searxng.server.form</field>
+        <field name="model">searxng.server</field>
+        <field name="arch" type="xml">
+            <form string="SearxNG Server">
+                <sheet>
+                    <group>
+                        <group string="Configuration">
+                            <field name="name"/>
+                            <field name="base_url"/>
+                        </group>
+                        <group string="Settings">
+                            <field name="timeout"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_searxng_server_search" model="ir.ui.view">
+        <field name="name">searxng.server.search</field>
+        <field name="model">searxng.server</field>
+        <field name="arch" type="xml">
+            <search string="Search SearxNG Server">
+                <field name="name"/>
+                <field name="base_url"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_searxng_server" model="ir.actions.act_window">
+        <field name="name">SearxNG Servers</field>
+        <field name="res_model">searxng.server</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_searxng_server_search"/>
+    </record>
+
+    <menuitem id="menu_searxng_server"
+              name="Servers"
+              parent="menu_searxng_root"
+              action="action_searxng_server"
+              sequence="10"/>
+</odoo>

@@ -28,7 +28,7 @@ async def main():
                 print(type(tool.inputSchema))
 
         except Exception as e:
-            print(f"\nTOOLS indisponibles: {e}")
+            print(f"\nTOOLS unavailable: {e}")
 
         # Resources
         try:
@@ -38,7 +38,7 @@ async def main():
                 print(f"  {resource.uri}: {resource.name}")
 
         except Exception as e:
-            print(f"\nRESOURCES indisponibles: {e}")
+            print(f"\nRESOURCES unavailable: {e}")
 
         # Prompts
         try:
@@ -48,7 +48,7 @@ async def main():
                 print(f"  {prompt.name}: {prompt.description}")
 
         except Exception as e:
-            print(f"\nPROMPTS indisponibles: {e}")
+            print(f"\nPROMPTS unavailable: {e}")
 
 
 asyncio.run(main())

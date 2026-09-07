@@ -37,6 +37,10 @@ class LitellmPromptMessage(models.Model):
     cost = fields.Float("Cost")
     total_duration = fields.Float("Duration")
     
-    tool_call_id = fields.Char('Tool Call ID')
-    tool_name = fields.Char('Tool Name')
+    tool_call_id = fields.Char('Tool call ID')
+    tool_calls = fields.Json('Tool calls')
+    
+
+        
+        
     

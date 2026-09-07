@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_searxng_server_user,searxng.server.user,model_searxng_server,base.group_user,1,0,0,0
+access_searxng_server_manager,searxng.server.manager,model_searxng_server,group_searxng_manager,1,1,1,1
+access_searxng_query_user,searxng.query.user,model_searxng_query,base.group_user,1,0,0,0
+access_searxng_query_manager,searxng.query.manager,model_searxng_query,group_searxng_manager,1,1,1,1
+access_searxng_result_user,searxng.result.user,model_searxng_result,base.group_user,1,0,0,0
+access_searxng_result_manager,searxng.result.manager,model_searxng_result,group_searxng_manager,1,1,1,1

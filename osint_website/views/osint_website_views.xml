@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_osint_website_list" model="ir.ui.view">
+        <field name="name">osint.website.list</field>
+        <field name="model">osint.website</field>
+        <field name="arch" type="xml">
+            <list string="Websites / Domains">
+                <field name="name"/>
+                <field name="url_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_osint_website_form" model="ir.ui.view">
+        <field name="name">osint.website.form</field>
+        <field name="model">osint.website</field>
+        <field name="arch" type="xml">
+            <form string="Website / Domain">
+                <sheet>
+                    <group string="Domain">
+                        <field name="name"/>
+                        <field name="url_count"/>
+                    </group>
+                    <notebook>
+                        <page string="URLs" name="urls">
+                            <field name="url_ids">
+                                <list>
+                                    <field name="scheme"/>
+                                    <field name="path"/>
+                                    <field name="query"/>
+                                    <field name="fragment"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_osint_website_search" model="ir.ui.view">
+        <field name="name">osint.website.search</field>
+        <field name="model">osint.website</field>
+        <field name="arch" type="xml">
+            <search string="Search Website">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_osint_website" model="ir.actions.act_window">
+        <field name="name">Websites</field>
+        <field name="res_model">osint.website</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_osint_website_search"/>
+    </record>
+
+    <menuitem id="menu_osint_website"
+              name="Websites"
+              parent="menu_website_root"
+              action="action_osint_website"
+              sequence="10"/>
+</odoo>

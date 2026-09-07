@@ -99,7 +99,7 @@ class LitellmProvider(models.Model):
             headers["X-Api-Key"] = api_key
             
         elif not url:
-            raise UserError(f"Configure the host of the provider.")
+            raise UserError("Configure the host of this provider.")
                 
         elif self.api_type == "ollama":
             url += '/api/tags'
