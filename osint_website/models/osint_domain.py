@@ -15,10 +15,10 @@ class OsintWebsite(models.Model):
     _order = 'name'
 
     name = fields.Char(
-        string='website', 
+        string='Website', 
         required=True, 
         index=True,
-        help="Ex: flipboard.com"
+        help="E.g. flipboard.com"
     )
     url_ids = fields.One2many(
         'osint.url', 
@@ -35,3 +35,15 @@ class OsintWebsite(models.Model):
         for website in self:
             website.url_count = len(website.url_ids)
 
+    @api.constrains("website_id")
+    def _check_unique_website(self):
+        for record in self:
+            if record.name:
+                duplicate = self.search([
+                    ("name", "=", name),
+                    ("id", "!=", record.id),
+                ], limit=1)
+    
+                if duplicate:
+                    raise ValidationError(
+                        f"This website is already in created: {record.name}")

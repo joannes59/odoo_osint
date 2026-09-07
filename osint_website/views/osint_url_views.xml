@@ -5,7 +5,12 @@
         <field name="model">osint.url</field>
         <field name="arch" type="xml">
             <list string="URLs">
+                <field name="date"/>
                 <field name="website_id"/>
+                <field name="category"/>
+                <field name="title"/>
+                
+                
                 <field name="name" widget="url"/>
             </list>
         </field>

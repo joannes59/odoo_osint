@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
 
                 <group name="configuration" position="after">
-                    <group string="MCP serveur">
+                    <group string="MCP Server">
                         <field name="mcp_ids"/>  
                     </group>
                 </group>

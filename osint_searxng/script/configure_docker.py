@@ -22,30 +22,30 @@ def docker_exec(command):
 
 
 # ---------------------------------------------------------
-# 1. Lire la configuration actuelle
+# 1. Read the current configuration
 # ---------------------------------------------------------
 
-print(f"Lecture de {CONFIG} dans {CONTAINER}...")
+print(f"Reading {CONFIG} in {CONTAINER}...")
 
 content = docker_exec(f"cat {CONFIG}")
 
-print("Configuration actuelle :")
+print("Current configuration:")
 print("----------------------------------------")
 print(content)
 print("----------------------------------------")
 
 
 # ---------------------------------------------------------
-# 2. Ajouter/modifier search.formats
+# 2. Add/modify search.formats
 # ---------------------------------------------------------
 
 lines = content.splitlines()
 
-# Supprimer une éventuelle ancienne section "formats"
-# sous "search", puis reconstruire proprement la section.
+# Remove any old "formats" section
+# under "search", then rebuild the section cleanly.
 #
-# Pour ta configuration actuelle, search n'existe pas,
-# donc on ajoute simplement la section.
+# In the current configuration, search does not exist,
+# so we simply add the section.
 
 if "\nsearch:" not in "\n" + content:
     if not content.endswith("\n"):
@@ -59,12 +59,12 @@ search:
 """
 
 else:
-    print("Une section 'search' existe déjà.")
-    print("Aucune modification automatique de cette section n'est effectuée.")
+    print("A 'search' section already exists.")
+    print("No automatic modification of this section is performed.")
 
 
 # ---------------------------------------------------------
-# 3. Ajouter limiter: false dans server
+# 3. Add limiter: false in server
 # ---------------------------------------------------------
 
 if "limiter:" not in content:
@@ -78,7 +78,7 @@ if "limiter:" not in content:
             break
 
     if server_index is not None:
-        # Chercher la fin de la section server
+        # Find the end of the server section
         insert_index = server_index + 1
 
         while (
@@ -95,21 +95,21 @@ if "limiter:" not in content:
 
 
 # ---------------------------------------------------------
-# 4. Afficher la nouvelle configuration
+# 4. Display the new configuration
 # ---------------------------------------------------------
 
-print("Nouvelle configuration :")
+print("New configuration:")
 print("----------------------------------------")
 print(content)
 print("----------------------------------------")
 
 
 # ---------------------------------------------------------
-# 5. Sauvegarder dans le conteneur
+# 5. Save into the container
 # ---------------------------------------------------------
 
-# Utilisation de stdin pour éviter les problèmes
-# d'échappement avec docker exec.
+# Use stdin to avoid escaping issues
+# with docker exec.
 process = subprocess.run(
     [
         "docker",
@@ -125,17 +125,17 @@ process = subprocess.run(
 )
 
 if process.returncode != 0:
-    print("Erreur lors de l'écriture du fichier.", file=sys.stderr)
+    print("Error while writing the file.", file=sys.stderr)
     sys.exit(process.returncode)
 
-print("Configuration sauvegardée.")
+print("Configuration saved.")
 
 
 # ---------------------------------------------------------
-# 6. Redémarrer SearXNG
+# 6. Restart SearXNG
 # ---------------------------------------------------------
 
-print("Redémarrage de SearXNG...")
+print("Restarting SearXNG...")
 
 result = subprocess.run(
     ["docker", "restart", CONTAINER],
@@ -147,15 +147,15 @@ if result.returncode != 0:
     print(result.stderr, file=sys.stderr)
     sys.exit(result.returncode)
 
-print("SearXNG redémarré.")
+print("SearXNG restarted.")
 
 
 # ---------------------------------------------------------
-# 7. Afficher la configuration finale
+# 7. Display the final configuration
 # ---------------------------------------------------------
 
 print()
-print("Configuration finale :")
+print("Final configuration:")
 print("----------------------------------------")
 
 final_content = docker_exec(f"cat {CONFIG}")

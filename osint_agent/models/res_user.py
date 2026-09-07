@@ -13,7 +13,7 @@ class ResUsers(models.Model):
     _inherit = "res.users"
 
     is_ai_agent = fields.Boolean(
-        string="Agent IA",
+        string="AI Agent",
         default=False,
     )
     

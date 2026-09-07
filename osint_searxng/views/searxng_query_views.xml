@@ -32,12 +32,10 @@
                         <page string="Results" name="results">
                             <field name="result_ids">
                                 <list>
-                                    <field name="title"/>
                                     <field name="website_id"/>
                                     <field name="engine"/>
-                                    <field name="category"/>
                                     <field name="score"/>
-                                    <field name="published_date"/>
+                                    <field name="date"/>
                                 </list>
                             </field>
                         </page>

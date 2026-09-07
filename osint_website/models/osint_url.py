@@ -7,7 +7,8 @@ Created on Sun Aug 30 12:47:20 2026
 """
 
 from odoo import models, fields, api
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse #, urlunparse
+from odoo.exceptions import ValidationError
 
 
 class OsintUrl(models.Model):
@@ -18,7 +19,7 @@ class OsintUrl(models.Model):
 
     name = fields.Char(string='URL',
                        index=True,
-                       help="Ex: https://fr.wikipedia.org/wiki/Uniform_Resource_Locator")
+                       help="E.g. https://en.wikipedia.org/wiki/Uniform_Resource_Locator")
     
     website_id = fields.Many2one(
         'osint.website',
@@ -30,9 +31,9 @@ class OsintUrl(models.Model):
     
     # Metadata
     scheme = fields.Char(string='Scheme', compute='_compute_url', 
-                         help="Ex: https")
+                         help="E.g. https")
     path = fields.Char(string='Path', compute='_compute_url',
-                       help="Ex: /wiki/Uniform_Resource_Locator ...")
+                       help="E.g. /wiki/Uniform_Resource_Locator ...")
     params = fields.Char(string='Params', compute='_compute_url',
                          help="Parameters after the path (delimited by ;)")
     query = fields.Char(string='Query string', compute='_compute_url',
@@ -56,53 +57,47 @@ class OsintUrl(models.Model):
     date = fields.Datetime(string="Date", default=fields.Datetime.now)
     
     time_update = fields.Selection([
-        ('never', 'Never'),
+        ('undefined', 'Undefined'),
         ('day', 'Day'),
         ('week', 'Week'),
         ('month', 'Month'),
         ('semester', 'semester'),
         ('year', 'Year'),
-    ], string='Time Range', default='never')
+        ('always', 'Always'),
+    ], string='Validity time', default='undefined')
     
     # Data
-    content = fields.Html(
-        string='Extrait', 
-        help="Extrait du contenu."
+    title = fields.Char(
+        string='Title', 
+        index=True
     )
     
-    # Médias
+    content = fields.Html(
+        string='Content', 
+        help="Excerpt of the content."
+    )
+    
+    # Media
     thumbnail = fields.Char(
         string='Thumbnail',
-        help="Image miniature."
+        help="Thumbnail image."
     )
+    
     img_src = fields.Char(
-        string="Source de l'image",
-        help="URL de l'image."
+        string="Image Source",
+        help="URL of the image."
     )
     
     audio_src = fields.Char(
-        string= "Source de l'audio",
-        help="URL de l'audio."
+        string= "Audio Source",
+        help="URL of the audio."
     )
     
     video_src = fields.Char(
-        string= "Source de la vidéo",
-        help="URL de la vidéo."
+        string= "Video Source",
+        help="URL of the video."
     )
     
-    @api.constrains("website_id")
-    def _check_unique_website(self):
-        for record in self:
-            if record.website_id:
-                duplicate = self.search([
-                    ("website_id", "=", record.website_id.name),
-                    ("id", "!=", record.id),
-                ], limit=1)
-    
-                if duplicate:
-                    raise ValidationError(
-                        "Cet élément est déjà utilisé."
-                    )
     
     @api.depends('name')
     def _compute_website(self):

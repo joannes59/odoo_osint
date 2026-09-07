@@ -15,7 +15,7 @@ class DiscussChannel(models.Model):
     _inherit = 'discuss.channel'
 
     def _message_post_after_hook(self, message, msg_vals):
-        """ get the message and Ask IA """
+        """ Get the message and ask the AI."""
         
         # Get context information
         browser_context = self.env.context.copy()
@@ -29,12 +29,12 @@ class DiscussChannel(models.Model):
         res = super()._message_post_after_hook(message, msg_vals)
         
         
-        # Check if agent in the loop        
+        # Check if agent is in the loop        
         odoobot_id = self.env['ir.model.data']._xmlid_to_res_id("base.partner_root")        
         partner_origin = author_id and self.env['res.partner'].browse(author_id) or False
                 
         if not author_id or author_id == odoobot_id or partner_origin.main_user_id.is_ai_agent:
-            # No interaction with odoobot or previeus ai_agent response
+            # No interaction with odoobot or a previous AI agent response
             return res
 
         for channel in self:
@@ -64,13 +64,13 @@ class DiscussChannel(models.Model):
         return res
     
     def get_answer(self, browser_context):
-        """ return answer to the message """
+        """ Return an answer to the message."""
         answer = "ok, it is good!\n" + str(browser_context)
         return answer
     
     @api.model
     def parse_website_url(self):
-        """ Get informations on the web page viewing by the user """
+        """ Get information about the web page being viewed by the user."""
         
         res = {}
         current_url = ''

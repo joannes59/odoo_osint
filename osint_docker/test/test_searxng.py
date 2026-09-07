@@ -18,7 +18,7 @@ CONFIG_CONTAINER = "/etc/searxng/settings.yml"
 
 
 def run(command, check=True, capture=False, input_data=None):
-    """Exécute une commande système."""
+    """Run a system command."""
     print(f"$ {' '.join(command)}")
 
     result = subprocess.run(
@@ -39,7 +39,7 @@ def run(command, check=True, capture=False, input_data=None):
 
 
 def docker_exec(command, capture=True):
-    """Exécute une commande dans le conteneur."""
+    """Run a command inside the container."""
     return run(
         [
             "docker",
@@ -54,7 +54,7 @@ def docker_exec(command, capture=True):
 
 
 def container_exists():
-    """Vérifie si le conteneur existe."""
+    """Check if the container exists."""
     result = subprocess.run(
         [
             "docker",
@@ -71,7 +71,7 @@ def container_exists():
 
 
 def container_running():
-    """Vérifie si le conteneur est en fonctionnement."""
+    """Check if the container is running."""
     result = subprocess.run(
         [
             "docker",
@@ -88,14 +88,14 @@ def container_running():
 
 def modify_config(content):
     """
-    Modifie settings.yml sans supprimer
-    les autres paramètres existants.
+    Modify settings.yml without removing
+    the other existing parameters.
     """
 
     lines = content.splitlines()
 
     # -----------------------------------------------------
-    # Ajouter limiter: false dans server
+    # Add limiter: false in the server section
     # -----------------------------------------------------
 
     if not any(line.strip().startswith("limiter:") for line in lines):
@@ -115,7 +115,7 @@ def modify_config(content):
 
                 line = lines[insert_index]
 
-                # Nouvelle section YAML
+                # New YAML section
                 if line and not line.startswith(" "):
                     break
 
@@ -124,7 +124,7 @@ def modify_config(content):
             lines.insert(insert_index, "  limiter: false")
 
     # -----------------------------------------------------
-    # Ajouter search.formats
+    # Add search.formats
     # -----------------------------------------------------
 
     search_index = None
@@ -148,14 +148,14 @@ def modify_config(content):
 
     else:
 
-        # Vérifier si formats existe déjà
+        # Check if formats already exists
         formats_index = None
 
         for i in range(search_index + 1, len(lines)):
 
             line = lines[i]
 
-            # Nouvelle section
+            # New section
             if line and not line.startswith(" "):
                 break
 
@@ -182,7 +182,7 @@ def modify_config(content):
 
         else:
 
-            # Vérifier si json est déjà présent
+            # Check if json is already present
             json_exists = False
 
             for i in range(formats_index + 1, len(lines)):
@@ -211,27 +211,27 @@ def modify_config(content):
 
 print()
 print("=" * 60)
-print("Installation de SearXNG")
+print("SearXNG Installation")
 print("=" * 60)
 
 
 # ---------------------------------------------------------
-# 1. Création des répertoires
+# 1. Create the directories
 # ---------------------------------------------------------
 
 print()
-print("[1/7] Création des répertoires...")
+print("[1/7] Creating directories...")
 
 run(["mkdir", "-p", CONFIG_HOST])
 run(["mkdir", "-p", DATA_HOST])
 
 
 # ---------------------------------------------------------
-# 2. Pull de l'image
+# 2. Pull the image
 # ---------------------------------------------------------
 
 print()
-print("[2/7] Téléchargement de l'image SearXNG...")
+print("[2/7] Downloading the SearXNG image...")
 
 run([
     "docker",
@@ -241,25 +241,25 @@ run([
 
 
 # ---------------------------------------------------------
-# 3. Suppression de l'ancien conteneur
+# 3. Remove the old container
 # ---------------------------------------------------------
 
 print()
-print("[3/7] Vérification de l'ancien conteneur...")
+print("[3/7] Checking for an old container...")
 
 if container_exists():
 
-    print(f"Le conteneur '{CONTAINER}' existe déjà.")
+    print(f"The container '{CONTAINER}' already exists.")
 
     if container_running():
-        print("Arrêt du conteneur...")
+        print("Stopping the container...")
         run([
             "docker",
             "stop",
             CONTAINER,
         ])
 
-    print("Suppression du conteneur...")
+    print("Removing the container...")
     run([
         "docker",
         "rm",
@@ -268,15 +268,15 @@ if container_exists():
 
 else:
 
-    print("Aucun ancien conteneur.")
+    print("No old container.")
 
 
 # ---------------------------------------------------------
-# 4. Création du conteneur
+# 4. Create the container
 # ---------------------------------------------------------
 
 print()
-print("[4/7] Création du conteneur SearXNG...")
+print("[4/7] Creating the SearXNG container...")
 
 run([
     "docker",
@@ -295,11 +295,11 @@ run([
 
 
 # ---------------------------------------------------------
-# 5. Attente du démarrage
+# 5. Wait for the container to start
 # ---------------------------------------------------------
 
 print()
-print("[5/7] Attente du démarrage de SearXNG...")
+print("[5/7] Waiting for SearXNG to start...")
 
 for i in range(10):
 
@@ -310,7 +310,7 @@ for i in range(10):
 
 else:
 
-    print("Erreur : SearXNG n'a pas démarré.")
+    print("Error: SearXNG did not start.")
 
     run([
         "docker",
@@ -322,11 +322,11 @@ else:
 
 
 # ---------------------------------------------------------
-# 6. Modification de la configuration
+# 6. Modify the configuration
 # ---------------------------------------------------------
 
 print()
-print("[6/7] Modification de settings.yml...")
+print("[6/7] Modifying settings.yml...")
 
 result = docker_exec(
     f"cat {CONFIG_CONTAINER}"
@@ -335,7 +335,7 @@ result = docker_exec(
 current_config = result.stdout
 
 print()
-print("Configuration actuelle :")
+print("Current configuration:")
 print("-" * 60)
 print(current_config)
 print("-" * 60)
@@ -344,13 +344,13 @@ print("-" * 60)
 new_config = modify_config(current_config)
 
 print()
-print("Nouvelle configuration :")
+print("New configuration:")
 print("-" * 60)
 print(new_config)
 print("-" * 60)
 
 
-# Écriture dans le conteneur
+# Write into the container
 run(
     [
         "docker",
@@ -366,11 +366,11 @@ run(
 
 
 # ---------------------------------------------------------
-# Redémarrage
+# Restart
 # ---------------------------------------------------------
 
 print()
-print("Redémarrage de SearXNG...")
+print("Restarting SearXNG...")
 
 run([
     "docker",
@@ -386,7 +386,7 @@ time.sleep(5)
 # ---------------------------------------------------------
 
 print()
-print("[7/7] Test de l'API JSON...")
+print("[7/7] Testing the JSON API...")
 
 result = run(
     [
@@ -409,18 +409,18 @@ if "HTTP_STATUS:200" in response:
 
     print()
     print("=" * 60)
-    print("SearXNG est installé et fonctionne correctement.")
+    print("SearXNG is installed and working correctly.")
     print("=" * 60)
 
 else:
 
     print()
     print("=" * 60)
-    print("ERREUR : l'API SearXNG ne répond pas avec HTTP 200.")
+    print("ERROR: the SearXNG API does not respond with HTTP 200.")
     print("=" * 60)
 
     print()
-    print("Logs du conteneur :")
+    print("Container logs:")
 
     run([
         "docker",

@@ -50,6 +50,8 @@ class SearxngQuery(models.Model):
     result_ids = fields.One2many('searxng.result', 'query_id', string="Results")
     result_count = fields.Integer(string='Number of Results')
     
+    delay =  fields.Float(string='Delay (S)')
+    
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
@@ -80,10 +82,7 @@ class SearxngQuery(models.Model):
             
             for result in response.json().get('results'):
                 
-                # not used: 'iframe_src', 'audio_src', 'pubdate', 'length', 'views', 'metadata', 'publishedDate', 
-                # 'open_group', 'close_group', 'parsed_url',  'engines', 'positions', 'author',
-                list_result_field = ['template', 'title', 'content', 'img_src',  'thumbnail',
-                                    'priority', 'score', 'category', 'engine']
+                list_result_field = ['title', 'content', 'img_src', 'thumbnail', 'category', 'audio_src']
                 
                 url_name = result.get('url')
                 # 1. Find or create the URL
@@ -91,15 +90,19 @@ class SearxngQuery(models.Model):
                 if not url:
                     url = url.create({'name': url_name})
                 
-                data = {'query_id': self.id, 'url_id': url.id}
-                
+                url_vals = {}
                 for result_field in list_result_field:
-                    data[result_field] = result.get(result_field)
+                    url_vals[result_field] = result.get(result_field)
+                url.write(url_vals)
                     
-                self.result_ids.create(data)
-
+                result_vals = {'query_id': self.id, 'url_id': url.id}
+                result_vals['score'] = result.get('score')
+                result_vals['engine'] = result.get('engine')
+                self.result_ids.create(result_vals)
+                
+                
         except requests.exceptions.RequestException as e:
-            raise ValueError(f"Erreur de communication avec SearxNG : {e}") from e
+            raise ValueError(f"Communication error with SearxNG: {e}") from e
              
         return {
             'type': 'ir.actions.act_window',
