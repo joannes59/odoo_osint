@@ -7,11 +7,7 @@
             <list string="URLs">
                 <field name="date"/>
                 <field name="website_id"/>
-                <field name="category"/>
-                <field name="title"/>
-                
-                
-                <field name="name" widget="url"/>
+                <field name="resume_content"/>
             </list>
         </field>
     </record>
@@ -22,21 +18,37 @@
         <field name="arch" type="xml">
             <form string="URL">
                 <sheet>
-                    <group string="URL">
-                        <field name="website_id"/>
-                        <field name="name"/>
-                    </group>
-                    <group string="Components">
-                        <group>
-                            <field name="scheme"/>
-                            <field name="path"/>
-                        </group>
-                        <group>
-                            <field name="params"/>
-                            <field name="query"/>
-                            <field name="fragment"/>
-                        </group>
-                    </group>
+
+                        
+                    <field name="name" widget="url"/>
+
+                    <notebook>
+                        <page string="Preview" name="Preview">
+
+                            <field name="resume_content" colspan="2" nolabel="1"/>
+                        </page>
+                        <page string="Parameters" name="parameters">
+                            <group string="Components">
+                                <group>
+                                    <field name="website_id"/>
+                                    <field name="scheme"/>
+                                    <field name="path"/>
+                                </group>
+                                <group>
+                                    <field name="params"/>
+                                    <field name="query"/>
+                                    <field name="fragment"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Medias" name="media">
+                            <group>
+                                <field name="thumbnail"/>
+                                <field name="img_src"/>
+                                <field name="audio_src"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
