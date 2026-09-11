@@ -131,7 +131,7 @@
 
     <menuitem id="menu_fastmcp_server"
               name="MCP Servers"
-              parent="osint_litellm.menu_litellm_root"
+              parent="osint_fastmcp.menu_fastmcp_root"
               action="action_fastmcp_server"
-              sequence="45"/>
+              sequence="10"/>
 </odoo>

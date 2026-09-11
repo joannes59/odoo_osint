@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_litellm_root"
-              name="LiteLLM"
+    <menuitem id="menu_fastmcp_root"
+              name="FastMCP"
               parent="osint_base.menu_osint_base_configuration"
-              sequence="10" />
+              sequence="20" />
 
 </odoo>

@@ -23,6 +23,7 @@ class LitellmPrompt(models.Model):
     question = fields.Text('Question')
     response = fields.Text('Response')
     keep_alive = fields.Text('keep alive')
+    session_id = fields.Many2one('litellm.session', string='Session')
     
     @api.model
     def to_json(self, response_tool_calls):

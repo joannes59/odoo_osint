@@ -9,14 +9,17 @@
         perform web searches, and keep a persistent history of all queries 
         and their results directly within the Odoo interface.
     """,
-    'depends': ['base', 'osint_website'],
+    'depends': ['osint_base', 'osint_website'],
     'data': [
         'security/res.group.xml',
         'security/ir.model.access.csv',
+        
         'views/menu_views.xml',
         'views/searxng_server_views.xml',
         'views/searxng_query_views.xml',
         'views/searxng_result_views.xml',
+        
+        'data/searxng_server_data.xml',
     ],
     'installable': True,
     'application': True,

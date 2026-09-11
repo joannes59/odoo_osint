@@ -1,4 +1,4 @@
 from . import res_user
-from . import discuss_channel
 from . import mail_message
-
+from . import mail_bot
+from . import discuss_channel_member

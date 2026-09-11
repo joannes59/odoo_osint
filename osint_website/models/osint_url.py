@@ -9,6 +9,7 @@ Created on Sun Aug 30 12:47:20 2026
 from odoo import models, fields, api
 from urllib.parse import urlparse #, urlunparse
 from odoo.exceptions import ValidationError
+from odoo.tools import html_escape
 
 
 class OsintUrl(models.Model):
@@ -76,6 +77,13 @@ class OsintUrl(models.Model):
         string='Content', 
         help="Excerpt of the content."
     )
+
+    resume_content = fields.Html(
+        string='Search Result Preview',
+        compute='_compute_resume_content',
+        sanitize=False,
+        help="Title, content and website formatted as a search engine result."
+    )
     
     # Media
     thumbnail = fields.Char(
@@ -126,5 +134,26 @@ class OsintUrl(models.Model):
             url.params = parsed.params
             url.query = parsed.query
             url.fragment = parsed.fragment
+
+    @api.depends('name', 'title', 'content', 'website_id.name')
+    def _compute_resume_content(self):
+        """Format the title, content and website like a search engine result."""
+        for url in self:
+            
+            name = html_escape(url.name or '')
+            title = html_escape(url.title or url.name or '')
+            domain = html_escape(url.website_id.name or '')
+            content = url.content or ''
+            
+            url.resume_content = f"""
+            <div style="font-family: Arial, sans-serif; line-height: 1.4;">
+                <a href="{name}" target="_blank"
+                   style="color: #1a0dab; font-size: 18px; text-decoration: none; display: block; margin-bottom: 2px;">
+                    {title}
+                </a>
+                <div style="color: #006621; font-size: 14px; margin-bottom: 4px;">{domain}</div>
+                <div style="color: #4d5156; font-size: 14px;">{content}</div>
+            </div>
+            """
     
         

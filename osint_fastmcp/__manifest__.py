@@ -12,8 +12,12 @@
     'depends': ['osint_litellm'],
     'data': [
         'security/ir.model.access.csv',
-        
+
+        'views/menu_views.xml',        
         'views/fastmcp_server_views.xml',
+        'views/fastmcp_tool_views.xml',
+        'views/fastmcp_prompt_views.xml',
+        'views/fastmcp_resource_views.xml',
         'views/litellm_prompt_views.xml',
     ],
     'installable': True,

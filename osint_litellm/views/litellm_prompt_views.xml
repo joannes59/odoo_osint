@@ -31,7 +31,6 @@
                     <group string="Messages">
                         <field name="message_ids">
                             <list>
-                                <field name="sequence" widget="handle"/>
                                 <field name="role"/>
                                 <field name="content"/>
                                 <field name="tool_calls"/>
@@ -53,11 +52,7 @@
                                    placeholder="Enter your question here..."/>
                         </group>
                     </group>
-                    <group colspan="2">
-                        <group string="Response">
-                            <field name="response" colspan="2" nolabel="1"/>
-                        </group>
-                    </group>
+
                 </sheet>
             </form>
         </field>

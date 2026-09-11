@@ -1,5 +1,10 @@
 # odoo_osint
 
+> [!CAUTION]
+> **This project is under active development and is not ready for production use.**
+> Modules are available for evaluation purposes only and have not been finalized.
+> APIs, data models, and workflows may change without notice.
+
 Manage OSINT (Open Source Intelligence) information directly inside **Odoo**.
 
 This project groups several Odoo modules and utility scripts that let you:
@@ -14,6 +19,7 @@ This project groups several Odoo modules and utility scripts that let you:
 
 | Module                    | Description                                                    |
 | ------------------------- | -------------------------------------------------------------- |
+| `osint_base`              | Root OSINT menu and shared security groups                     |
 | `osint_agent`             | AI agents: `res.users` flagged as agent, replies in Discuss    |
 | `osint_website`           | Websites and URLs management with URL parsing                 |
 | `osint_searxng`           | SearxNG meta-search integration with query/result history     |

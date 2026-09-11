@@ -11,5 +11,7 @@ access_litellm_prompt_message_user,litellm.prompt.message.user,model_litellm_pro
 access_litellm_prompt_message_manager,litellm.prompt.message.manager,model_litellm_prompt_message,group_litellm_manager,1,1,1,1
 access_litellm_provider_apikey_user,litellm.provider.apikey.user,model_litellm_provider_apikey,base.group_user,1,0,0,0
 access_litellm_provider_apikey_manager,litellm.provider.apikey.manager,model_litellm_provider_apikey,group_litellm_manager,1,1,1,1
+access_litellm_session_user,litellm.session.user,model_litellm_session,base.group_user,1,0,0,0
+access_litellm_session_manager,litellm.session.manager,model_litellm_session,group_litellm_manager,1,1,1,1
 
 
