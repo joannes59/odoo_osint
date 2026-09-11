@@ -67,5 +67,5 @@
               name="Websites"
               parent="menu_website_root"
               action="action_osint_website"
-              sequence="10"/>
+              sequence="30"/>
 </odoo>

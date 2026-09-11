@@ -2,6 +2,6 @@
 <odoo>
     <menuitem id="menu_website_root"
               name="Websites"
-              web_icon="fa fa-globe"
+              parent="osint_base.menu_osint_base_root"
               sequence="30"/>
 </odoo>

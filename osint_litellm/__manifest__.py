@@ -11,7 +11,7 @@
     """,
     'author': 'Joannes LANDY',
 
-    'depends': ['base'],
+    'depends': ['osint_base'],
     'external_dependencies': {
         'python': ['litellm'],
     },

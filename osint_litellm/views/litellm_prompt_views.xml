@@ -53,11 +53,7 @@
                                    placeholder="Enter your question here..."/>
                         </group>
                     </group>
-                    <group colspan="2">
-                        <group string="Response">
-                            <field name="response" colspan="2" nolabel="1"/>
-                        </group>
-                    </group>
+
                 </sheet>
             </form>
         </field>

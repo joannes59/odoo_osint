@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="searxng_server_local" model="searxng.server">
+            <field name="name">local</field>
+            <field name="base_url">http://localhost:8888</field>
+            <field name="timeout">15</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

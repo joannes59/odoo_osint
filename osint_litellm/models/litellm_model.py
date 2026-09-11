@@ -38,6 +38,7 @@ class LitellmModel(models.Model):
     context_length = fields.Integer('Context Length')
     embedding_length = fields.Integer('Embedding Length')
     capability_ids = fields.Many2many('litellm.model.capability', string='Capabilities')
+    authorized = fields.Boolean('Authorized', default=False)
     response_format = fields.Boolean('Response Format')
     json_schema = fields.Boolean('JSON Schema')
     

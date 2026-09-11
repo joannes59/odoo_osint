@@ -6,7 +6,6 @@
         <field name="arch" type="xml">
             <list string="URLs">
                 <field name="date"/>
-                <field name="website_id"/>
                 <field name="resume_content"/>
             </list>
         </field>

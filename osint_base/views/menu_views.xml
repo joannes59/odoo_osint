@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_osint_base_root"
+              name="OSINT"      
+              web_icon="osint_base,static/description/icon.png"
+              sequence="10" >
+              
+        <menuitem id="menu_osint_base_configuration"
+                  name="Configuration"
+                  sequence="100" />
+              
+    </menuitem>
+</odoo>

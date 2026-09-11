@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <menuitem id="menu_searxng_configuration"
+              name="SearxNG"
+              parent="osint_base.menu_osint_base_configuration"
+              sequence="50"/>
+              
     <menuitem id="menu_searxng_root"
               name="SearxNG"
-              web_icon="fa fa-search"
-              sequence="20"/>
+              parent="osint_base.menu_osint_base_root"
+              sequence="50"/>
 </odoo>

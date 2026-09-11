@@ -5,18 +5,15 @@
         <field name="model">litellm.model</field>
         <field name="arch" type="xml">
             <list string="AI Models">
-                            <header>
-                               
-                                <button name="action_update_model_support" string="Update Model Support" type="object"/>
-                            </header>
+                <header>
+                    <button name="action_update_model_support" string="Update Model Support" type="object"/>
+                </header>
                 <field name="name"/>
-                <field name="model"/>
                 <field name="provider_id"/>
-                <field name="family"/>
-                <field name="parameter_size"/>
-                <field name="response_format"/>
-                <field name="context_length"/>
-                <field name="size" optional="show"/>
+                <field name="parameter_size" optional="hide"/>
+                <field name="context_length" optional="hide"/>
+                <field name="size" optional="hide"/>
+                <field name="authorized" widget="boolean_toggle"/>
                 <field name="capability_ids" widget="many2many_tags" optional="show"/>
                 <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'confirm'" decoration-muted="state == 'draft'"/>
             </list>
@@ -36,34 +33,39 @@
                     <group>
                         <group string="Model">
                             <field name="name"/>
-                            <field name="model"/>
-                            <field name="digest"/>
                         </group>
                         <group string="Server">
                             <field name="provider_id"/>
-                            <field name="size"/>
+                            <field name="authorized" widget="boolean_toggle"/>
                         </group>
                     </group>
-                    <group string="Details">
-                        <group string="Format">
-                            <field name="format"/>
-                            <field name="family"/>
-                        </group>
-                        <group string="Sizes">
-                            <field name="parameter_size"/>
-                            <field name="quantization_level"/>
-                            <field name="context_length"/>
-                            <field name="embedding_length"/>
-                        </group>
-                    </group>
-                    <group string="Capabilities">
-                        <field name="capability_ids"/>
-                        <field name="response_format"/>
-                        <field name="json_schema"/>
-                    </group>
-                    <group string="Description (JSON)">
-                        <field name="description_pretty" widget="text"/>
-                    </group>
+                    <notebook>
+                        <page string="Capabilities" name="capabilities">
+                            <group>
+                                <field name="capability_ids"/>
+                            </group>
+                        </page>
+                        <page string="Details" name="details">
+                            <group string="Format">
+                                <field name="format"/>
+                                <field name="family"/>
+                                <field name="response_format"/>
+                                <field name="json_schema"/>
+                                <field name="model"/>
+                            </group>
+                            <group string="Sizes">
+                                <field name="parameter_size"/>
+                                <field name="quantization_level"/>
+                                <field name="context_length"/>
+                                <field name="embedding_length"/>
+                                <field name="size"/>
+                                <field name="digest"/>
+                            </group>
+                        </page>
+                        <page string="Description (JSON)" name="description">
+                            <field name="description_pretty" widget="text"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
