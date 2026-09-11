@@ -16,12 +16,12 @@ _logger = logging.getLogger(__name__)
 class LitellmPromptMessage(models.Model):
     _name = 'litellm.prompt.message'
     _description = 'Prompt Message'
-    _order = 'sequence, id'
+    _order = 'id'
 
     
     prompt_id = fields.Many2one('litellm.prompt', string='Prompt',
                                 required=True, ondelete='cascade')
-    sequence = fields.Integer('Sequence', default=10)
+
     role = fields.Selection([
         ('system', 'System'),
         ('developer', 'Developer'),

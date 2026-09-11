@@ -31,7 +31,6 @@
                     <group string="Messages">
                         <field name="message_ids">
                             <list>
-                                <field name="sequence" widget="handle"/>
                                 <field name="role"/>
                                 <field name="content"/>
                                 <field name="tool_calls"/>
