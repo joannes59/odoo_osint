@@ -17,3 +17,6 @@ class ResUsers(models.Model):
         default=False,
     )
     
+    litellm_session_id = fields.Many2one('litellm.session', string='Session')
+    
+    

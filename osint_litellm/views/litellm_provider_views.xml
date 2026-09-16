@@ -44,12 +44,10 @@
                         <page string="Models" name="models">
                             <field name="model_ids">
                                 <list>
+                                    <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="model"/>
-                                    <field name="family"/>
-                                    <field name="parameter_size"/>
-                                    <field name="quantization_level"/>
-                                    <field name="context_length"/>
+                                    <field name="authorized" widget="boolean_toggle"/>
                                     <field name="capability_ids" widget="many2many_tags"/>
                                 </list>
                             </field>

@@ -8,6 +8,7 @@
                 <header>
                     <button name="action_update_model_support" string="Update Model Support" type="object"/>
                 </header>
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="provider_id"/>
                 <field name="parameter_size" optional="hide"/>
@@ -32,6 +33,7 @@
                 <sheet>
                     <group>
                         <group string="Model">
+                            <field name="sequence"/>
                             <field name="name"/>
                         </group>
                         <group string="Server">

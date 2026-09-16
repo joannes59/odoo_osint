@@ -60,6 +60,19 @@ class LitellmPrompt(models.Model):
         return []
 
     def action_send(self, role='user'):
+        """ return llm response to prompt view """
+        self.send(role=role)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'litellm.prompt',
+            'res_id': self.id,
+            'view_mode': 'form',
+        }
+        
+        
+
+    def send(self, role='user'):
+        """ Complete a prompt to ask llm response """
         self.ensure_one()
         try:
             if self.question:
@@ -134,12 +147,7 @@ class LitellmPrompt(models.Model):
         except Exception as e:
             raise UserError("Failed to send prompt: %s" % str(e))
 
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'litellm.prompt',
-            'res_id': self.id,
-            'view_mode': 'form',
-        }
+        return self.response
 
 
 
