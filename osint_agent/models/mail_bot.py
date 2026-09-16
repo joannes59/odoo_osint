@@ -8,6 +8,8 @@ Created on Fri Sep 11 14:06:52 2026
 
 
 from odoo import models
+import markdown
+from markupsafe import Markup
 
 
 class MailBot(models.AbstractModel):
@@ -39,8 +41,10 @@ class MailBot(models.AbstractModel):
             
             # get llm session
             sesion = self.get_litellm_session(channel)
-            answer = sesion.get_answer(channel=channel, body=body,
+            response = sesion.get_answer(channel=channel, body=body,
                                        values=values, command=command)
+            answer = Markup(markdown.markdown(response or '', extensions=['tables']))
+            
         else:
             answer = super()._get_answer(channel=channel, body=body,
                                        values=values, command=command)

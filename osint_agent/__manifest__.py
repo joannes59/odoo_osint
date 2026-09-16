@@ -10,7 +10,12 @@
     'author': 'Joannes LANDY',
     'depends': ['base', 'web', 'mail', 'im_livechat', 'osint_litellm'],
     'data': [
+        'security/ir.model.access.csv',
+        
+        'views/menu_views.xml',
         'views/res_users_views.xml',
+        'views/osint_agent_skill_views.xml',
+        'views/osint_agent_skill_parameter_views.xml',
         ],
     'installable': True,
     'license': 'LGPL-3',
