@@ -18,8 +18,9 @@ _logger = logging.getLogger(__name__)
 class LitellmModel(models.Model):
     _name = 'litellm.model'
     _description = 'AI model'
+    _order = 'sequence, id'
 
-
+    sequence = fields.Integer('Sequence', default=10)
     name = fields.Char('Name')
     model = fields.Char('Model')
     state = fields.Selection([
