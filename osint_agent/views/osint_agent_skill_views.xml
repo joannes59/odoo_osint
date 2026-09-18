@@ -26,14 +26,22 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Preview (HTML)" name="preview">
+                            <separator string="Parameters"/>
+                            <field name="parameter_ids" widget="many2many_tags"/>
+                            <separator string="Description"/>
+                            <field name="description_pretty"/>
+                        </page>
                         <page string="Description (Markdown)" name="description">
                             <field name="description" widget="text"/>
                         </page>
-                        <page string="Preview (HTML)" name="preview">
-                            <field name="description_pretty"/>
-                        </page>
                         <page string="Parameters" name="parameters">
-                            <field name="parameter_ids" widget="many2many_tags"/>
+                            <field name="parameter_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="description"/>    
+                                </list>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>

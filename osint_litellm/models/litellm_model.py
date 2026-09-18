@@ -32,7 +32,6 @@ class LitellmModel(models.Model):
     description = fields.Json('Description')
     size = fields.Float('Size')
     digest = fields.Char('Digest')
-    format = fields.Char('Format')
     family = fields.Char('Family')
     parameter_size = fields.Char('Parameter Size')
     quantization_level = fields.Char('Quantization Level')
@@ -42,6 +41,7 @@ class LitellmModel(models.Model):
     authorized = fields.Boolean('Authorized', default=False)
     response_format = fields.Boolean('Response Format')
     json_schema = fields.Boolean('JSON Schema')
+
     
     description_pretty = fields.Text(
             string="Description",
@@ -82,6 +82,8 @@ class LitellmModel(models.Model):
             
             except Exception as e:
                 raise UserError("Failed to get supported params: %s" % str(e))
+
+
     
 
 

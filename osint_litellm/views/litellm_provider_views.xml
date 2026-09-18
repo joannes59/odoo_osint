@@ -5,9 +5,6 @@
         <field name="model">litellm.provider</field>
         <field name="arch" type="xml">
             <list string="AI Providers">
-                <header>
-                    <button name="action_update_providers" string="Update Providers" type="object"/>
-                </header>
                 <field name="name"/>
                 <field name="litellm_provider"/>
                 <field name="api_type"/>

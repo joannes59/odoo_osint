@@ -49,7 +49,6 @@
                         </page>
                         <page string="Details" name="details">
                             <group string="Format">
-                                <field name="format"/>
                                 <field name="family"/>
                                 <field name="response_format"/>
                                 <field name="json_schema"/>

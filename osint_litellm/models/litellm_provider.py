@@ -9,7 +9,7 @@ Created on Wed Jul  8 19:10:31 2026
 import litellm
 import requests
 
-from odoo import api, fields, models
+from odoo import fields, models
 from odoo.exceptions import UserError
 
 import logging
@@ -34,23 +34,14 @@ class LitellmProvider(models.Model):
         string="API Type", default="openai",
         help="Type of API, used for authentication, functions...")
     need_api_key = fields.Boolean("Need API Key")
+    keep_alive = fields.Char('Keep alive', help='Delay to keep AI model available on memory in minute, ex: 5m')
     model_ids = fields.One2many('litellm.model', 'provider_id', string='AI model')
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirm', 'Confirmed'),
         ('done', 'Done'),
     ], string='State', default='draft', required=True)
-
-
-    def action_update_providers(self):
-        """ Update provider configuration."""
-        pass
-    
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'litellm.provider',
-            'view_mode': 'list',
-        }        
+     
                 
     def get_apikey(self):
         """ Return api key to use with this model, depend on user """

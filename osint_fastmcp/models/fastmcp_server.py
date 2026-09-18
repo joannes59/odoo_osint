@@ -21,6 +21,7 @@ class FastMCPServer(models.Model):
     name = fields.Char('Name', required=True)
     server_url = fields.Char('Server URL', help="URL of the MCP server (http or sse transport).")
     apikey_ids = fields.One2many('fastmcp.server.apikey', 'server_id', string='API Keys')
+    built_in = fields.Boolean('built_in', help='Built in server is inside Odoo, no host needed')
     
     tool_ids = fields.One2many('fastmcp.tool', 'mcp_server_id', string='Tools')
     resource_ids = fields.One2many('fastmcp.resource', 'mcp_server_id', string='Resources')
@@ -88,6 +89,9 @@ class FastMCPServer(models.Model):
     def action_fetch_metadata(self):
         """Action triggered by the button to retrieve metadata."""
         self.ensure_one()
+        
+        if self.built_in:
+            return
         
         if not self.server_url:
             raise UserError("Please configure a valid MCP server URL.")
