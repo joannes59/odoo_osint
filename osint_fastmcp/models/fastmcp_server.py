@@ -9,9 +9,12 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
-import fastmcp
 import asyncio
-
+from contextlib import AsyncExitStack
+import httpx
+from mcp import ClientSession
+from mcp.client.sse import sse_client
+from mcp.client.streamable_http import streamable_http_client
 
 
 class FastMCPServer(models.Model):
@@ -52,38 +55,49 @@ class FastMCPServer(models.Model):
     @api.model
     def _run_async_mcp_fetch(self, server_url, apikey=None):
         """Internal method to execute asynchronous code."""
-        async def main():                
-            client = fastmcp.Client(server_url, auth=apikey)
+        headers = {"Authorization": f"Bearer {apikey}"} if apikey else None
+    
+        async def _safe_list(call, attr):
             try:
-                async with client:
-                    result = {}
-                    try:
-                        result['tools'] = await client.list_tools()
-                    except:
-                        result['tools'] = []
-                    
-                    try:
-                        result['resources'] = await client.list_resources()
-                    except:
-                        result['resources'] = []
-                    
-                    try:
-                        result['prompts'] = await client.list_prompts()
-                    except:
-                        result['prompts'] = []
-                    
-                    if result:
-                        result['status'] = 'success'
-                    else:
-                        result = {'status': 'error'}
-                
-                    return result
-                
+                return getattr(await call(), attr)
             except Exception as e:
-                _logger.error(f"MCP server connection error: {e}")
+                _logger.debug("MCP %s not available: %s", attr, e)
+                return []
+    
+        async def main():
+            try:
+                async with AsyncExitStack() as stack:
+                    if server_url.rstrip("/").endswith("/sse"):
+                        streams = await stack.enter_async_context(
+                            sse_client(server_url, headers=headers)
+                        )
+                    else:
+                        # Les en-têtes se règlent sur le client httpx
+                        http_client = await stack.enter_async_context(
+                            httpx.AsyncClient(
+                                headers=headers,
+                                follow_redirects=True,
+                                timeout=httpx.Timeout(30.0, read=300.0),
+                            )
+                        )
+                        streams = await stack.enter_async_context(
+                            streamable_http_client(server_url, http_client=http_client)
+                        )
+    
+                    read, write = streams[0], streams[1]
+                    session = await stack.enter_async_context(ClientSession(read, write))
+                    await session.initialize()
+    
+                    return {
+                        'status': 'success',
+                        'tools': await _safe_list(session.list_tools, 'tools'),
+                        'resources': await _safe_list(session.list_resources, 'resources'),
+                        'prompts': await _safe_list(session.list_prompts, 'prompts'),
+                    }
+            except Exception as e:
+                _logger.error("MCP server connection error: %s", e)
                 return {'status': 'error', 'message': str(e)}
-
-        # Execute the async loop within Odoo's synchronous context
+    
         return asyncio.run(main())
 
     def action_fetch_metadata(self):

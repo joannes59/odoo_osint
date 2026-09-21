@@ -18,7 +18,7 @@
         'views/fastmcp_tool_views.xml',
         'views/fastmcp_prompt_views.xml',
         'views/fastmcp_resource_views.xml',
-        'views/litellm_prompt_views.xml',
+
     ],
     'installable': True,
     'images': ['static/description/icon.png'],

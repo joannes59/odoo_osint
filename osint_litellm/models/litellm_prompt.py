@@ -37,6 +37,12 @@ class LitellmPrompt(models.Model):
         
         return result
     
+    def _get_message_sequence(self):
+        """ sequence message by 10 step """
+        last = self.message_ids.search([], order='sequence desc', limit=1)
+        print('-------_get_message_sequence-----------', last)
+        return (last.sequence if last else 0) + 10
+    
     @api.model
     def to_json(self, response_tool_calls):
         """ convert and save tools """
@@ -68,7 +74,7 @@ class LitellmPrompt(models.Model):
                 record.name = ""
     
     def generate_message_sytem(self):
-        """ Get the prompt system """
+        """ Get the prompt system, futur function """
         res = ''
         return res
         
@@ -108,7 +114,7 @@ class LitellmPrompt(models.Model):
             model = (self.model_id.provider_id.litellm_provider + '/' + self.model_id.model).lower()
             keep_alive = (self.model_id.provider_id.litellm_provider == 'OLLAMA') and '5m' or None
             
-            self.message_system = self.generate_message_sytem()
+            self.message_system = self.message_system or self.generate_message_sytem()
             
             tools = self.get_tools() or None       
             tool_choice = tools and "auto" or None

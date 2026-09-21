@@ -18,7 +18,7 @@ class LitellmPromptMessage(models.Model):
     _description = 'Prompt Message'
     _order = 'sequence, id'
 
-    sequence = fields.Integer('Sequence', default=10)
+    sequence = fields.Integer('Sequence', default=100)
     prompt_id = fields.Many2one('litellm.prompt', string='Prompt',
                                 required=True, ondelete='cascade')
 

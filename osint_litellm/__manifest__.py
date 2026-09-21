@@ -11,7 +11,7 @@
     """,
     'author': 'Joannes LANDY',
 
-    'depends': ['osint_base', 'im_livechat', 'osint_fastmcp'],
+    'depends': ['osint_base', 'osint_fastmcp'],
     'external_dependencies': {
         'python': ['litellm'],
     },

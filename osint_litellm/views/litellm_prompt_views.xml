@@ -60,7 +60,13 @@
                             <group>
                                 <field name="message_system" widget="text"/>
                             </group>
-                        </page>                        
+                        </page> 
+                        <page string="MCP server" name="mcp_server">
+                            <group string="MCP Server">
+                                <field name="mcp_ids"/>  
+                            </group>
+                        </page>
+                                               
                     </notebook>
                 </sheet>
             </form>
