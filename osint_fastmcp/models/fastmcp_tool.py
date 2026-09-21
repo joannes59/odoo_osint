@@ -3,6 +3,7 @@
 
 from odoo import api, fields, models
 import json
+from jsonschema import Draft7Validator
 
 
 class FastMCPTool(models.Model):
@@ -20,6 +21,9 @@ class FastMCPTool(models.Model):
     annotations = fields.Json('Annotations')
     
     enabled = fields.Boolean('Enabled', default=True)
+    
+    parameter_ids = fields.One2many('fastmcp.tool.parameter', 'tool_id',
+                                    string='Input Parameters')
     
     input_schema_pretty = fields.Text(string="Input Schema", compute="_json_pretty")
 
@@ -100,8 +104,120 @@ class FastMCPTool(models.Model):
                 }
             })
         return result
+
+    def action_generate_input_schema(self):
+        """ Build input_schema from the configured parameters. """
+        self.ensure_one()
+
+        properties = {}
+        required = []
+
+        for param in self.parameter_ids:
+            if not param.name:
+                continue
+
+            prop = {"type": param.type}
+            if param.description:
+                prop["description"] = param.description
+            properties[param.name] = prop
+
+            if param.required:
+                required.append(param.name)
+
+        schema = {
+            "type": "object",
+            "properties": properties,
+        }
+        if required:
+            schema["required"] = required
+
+        self.input_schema = schema
                         
-            
+    
+    def validate_tool_call(self, tool_call):
+        """
+        Validate a LiteLLM tool_call against its JSON inputSchema.
+        "tool_call" : litellm response in json
+    
+        Returns:
+            {
+                "valid": bool,
+                "errors": list[str],
+                "name": str | None,
+                "arguments": dict | None,
+            }
+        """
         
+        if tool_call.get("type") != "function":
+            return {
+                "valid": False,
+                "errors": ["tool_call.type must be 'function'"],
+                "name": None,
+                "arguments": None,
+            }
     
+        function = tool_call.get("function")
     
+        if not isinstance(function, dict):
+            return {
+                "valid": False,
+                "errors": ["tool_call.function must be an object"],
+                "name": None,
+                "arguments": None,
+            }
+    
+        name = function.get("name")
+        arguments = function.get("arguments")
+    
+        if not name:
+            return {
+                "valid": False,
+                "errors": ["Missing function name"],
+                "name": None,
+                "arguments": None,
+            }
+    
+        # Les arguments LiteLLM sont généralement une chaîne JSON
+        if isinstance(arguments, str):
+            try:
+                arguments = json.loads(arguments)
+            except json.JSONDecodeError as e:
+                return {
+                    "valid": False,
+                    "errors": [f"Invalid JSON arguments: {e}"],
+                    "name": name,
+                    "arguments": None,
+                }
+    
+        if not isinstance(arguments, dict):
+            return {
+                "valid": False,
+                "errors": ["Function arguments must be a JSON object"],
+                "name": name,
+                "arguments": arguments,
+            }
+    
+        # Validation JSON Schema
+        validator = Draft7Validator(self.input_schema)
+        errors = sorted(
+            validator.iter_errors(arguments),
+            key=lambda error: list(error.path)
+        )
+    
+        error_messages = []
+    
+        for error in errors:
+            path = ".".join(str(x) for x in error.path)
+    
+            if path:
+                error_messages.append(f"{path}: {error.message}")
+            else:
+                error_messages.append(error.message)
+    
+        return {
+            "valid": not error_messages,
+            "errors": error_messages,
+            "name": name,
+            "arguments": arguments,
+        }
+        

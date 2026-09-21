@@ -50,10 +50,10 @@ class FastMCPServer(models.Model):
             record.prompt_count = len(record.prompt_ids)
 
     @api.model
-    def _run_async_mcp_fetch(self, server_url):
+    def _run_async_mcp_fetch(self, server_url, apikey=None):
         """Internal method to execute asynchronous code."""
-        async def main():
-            client = fastmcp.Client(server_url)
+        async def main():                
+            client = fastmcp.Client(server_url, auth=apikey)
             try:
                 async with client:
                     result = {}
@@ -97,6 +97,12 @@ class FastMCPServer(models.Model):
             raise UserError("Please configure a valid MCP server URL.")
 
         _logger.info(f"Connecting to MCP server: {self.server_url}")
+        if self.apikey_ids:
+            # Todo complete the search with user right
+            apikey = self.apikey_ids[0].apikey
+        else:
+            apikey = None
+            
         result = self._run_async_mcp_fetch(self.server_url)
 
         if result['status'] == 'success':

@@ -17,12 +17,5 @@ _logger = logging.getLogger(__name__)
 class LitellmPrompt(models.Model):
     _inherit = 'litellm.prompt'
     
-    mcp_ids = fields.Many2many('fastmcp.server', string='MCP server')
 
-    def get_tools(self):
-        """ Get the tools available """
-        result = super().get_tools()
-        result += self.mcp_ids.get_tools()
-        
-        return result
     

@@ -40,6 +40,40 @@
                         <page string="Input Schema" name="input_schema">
                             <field name="input_schema_pretty" widget="text"/>
                         </page>
+                        <page string="Generator" name="generator">
+                            <group>
+                                <button name="action_generate_input_schema"
+                                        string="Generate" type="object"
+                                        class="btn-primary"
+                                        help="Generate the Input Schema from the parameters below."/>
+                            </group>
+                            <group string="Input Parameters">
+                                <field name="parameter_ids">
+                                    <list string="Input Parameters">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="type"/>
+                                        <field name="required"/>
+                                        <field name="description"/>
+                                    </list>
+                                    <form string="Input Parameter">
+                                        <group>
+                                            <group>
+                                                <field name="name"/>
+                                                <field name="type"/>
+                                            </group>
+                                            <group>
+                                                <field name="required"/>
+                                                <field name="sequence"/>
+                                            </group>
+                                        </group>
+                                        <group string="Description">
+                                            <field name="description" widget="text"/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </group>
+                        </page>
                         <page string="Output Schema" name="output_schema">
                             <field name="output_schema" widget="text"/>
                         </page>

@@ -9,7 +9,7 @@
         Add description of MCP server, store the MCP capability in database
     """,
     'author': 'Joannes LANDY',
-    'depends': ['osint_litellm'],
+    'depends': ['osint_base'],
     'data': [
         'security/ir.model.access.csv',
 

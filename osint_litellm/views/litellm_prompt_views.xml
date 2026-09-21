@@ -60,7 +60,7 @@
                             <group>
                                 <field name="message_system" widget="text"/>
                             </group>
-                        </page>
+                        </page>                        
                     </notebook>
                 </sheet>
             </form>

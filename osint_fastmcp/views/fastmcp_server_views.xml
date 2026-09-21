@@ -30,8 +30,7 @@
                         </group>
                         <group string="Connection">
                             <field name="server_url"/>
-   
-                       
+                            <field name="built_in"/>
                         </group>
                     </group>
 

@@ -6,11 +6,13 @@
         <field name="inherit_id" ref="osint_litellm.view_litellm_prompt_form"/>
         <field name="arch" type="xml">
 
-                <group name="configuration" position="after">
+            <page name="system_message" position="after">
+                <page string="MCP server" name="mcp_server">
                     <group string="MCP Server">
                         <field name="mcp_ids"/>  
                     </group>
-                </group>
+                </page>
+            </page>                        
 
         </field>
     </record>

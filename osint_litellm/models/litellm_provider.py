@@ -41,8 +41,8 @@ class LitellmProvider(models.Model):
         ('confirm', 'Confirmed'),
         ('done', 'Done'),
     ], string='State', default='draft', required=True)
-     
-                
+          
+    
     def get_apikey(self):
         """ Return api key to use with this model, depend on user """
         self.ensure_one()
@@ -106,7 +106,6 @@ class LitellmProvider(models.Model):
             # TODO: add gemini and more
             pass
         
-
         response = requests.get(url, headers=headers, timeout=timeout)
         response.raise_for_status()
         return response    

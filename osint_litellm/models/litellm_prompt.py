@@ -27,7 +27,15 @@ class LitellmPrompt(models.Model):
     session_id = fields.Many2one('litellm.session', string='Session')
     
     message_system = fields.Text('System Message')
-    
+
+    mcp_ids = fields.Many2many('fastmcp.server', string='MCP server')
+
+    def get_tools(self):
+        """ Get the tools available """
+        result = []
+        result += self.mcp_ids.get_tools()
+        
+        return result
     
     @api.model
     def to_json(self, response_tool_calls):
@@ -58,11 +66,6 @@ class LitellmPrompt(models.Model):
 
             else:
                 record.name = ""
-
-    def get_tools(self):
-        """ Get the tools available """
-        res = []
-        return res
     
     def generate_message_sytem(self):
         """ Get the prompt system """
@@ -145,6 +148,8 @@ class LitellmPrompt(models.Model):
                         'response': reply,
                         'message_ids': [(0, 0, reply_message)],
                     })
+                    
+                    # In case if there are multiple tool_calls, init message
                     reply_message['content'] = None
                     reply_message['prompt_eval_count'] = 0
                     reply_message['eval_count'] = 0
