@@ -12,7 +12,7 @@
         used by all other OSINT modules.
     """,
     'author': 'Joannes LANDY',
-    'depends': ['base'],
+    'depends': ['base', 'im_livechat'],
     'data': [
         'security/res.group.xml',
         'security/ir.model.access.csv',

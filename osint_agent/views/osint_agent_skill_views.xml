@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_osint_agent_skill_list" model="ir.ui.view">
+        <field name="name">osint.agent.skill.list</field>
+        <field name="model">osint.agent.skill</field>
+        <field name="arch" type="xml">
+            <list string="Agent Skills" create="true">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="role" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_osint_agent_skill_form" model="ir.ui.view">
+        <field name="name">osint.agent.skill.form</field>
+        <field name="model">osint.agent.skill</field>
+        <field name="arch" type="xml">
+            <form string="Agent Skill">
+                <sheet>
+                    <group>
+                        <group string="Skill">
+                            <field name="sequence"/>
+                            <field name="name"/>
+                            <field name="role"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Preview (HTML)" name="preview">
+                            <separator string="Parameters"/>
+                            <field name="parameter_ids" widget="many2many_tags"/>
+                            <separator string="Description"/>
+                            <field name="description_pretty"/>
+                        </page>
+                        <page string="Description (Markdown)" name="description">
+                            <field name="description" widget="text"/>
+                        </page>
+                        <page string="Parameters" name="parameters">
+                            <field name="parameter_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="description"/>    
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_osint_agent_skill_search" model="ir.ui.view">
+        <field name="name">osint.agent.skill.search</field>
+        <field name="model">osint.agent.skill</field>
+        <field name="arch" type="xml">
+            <search string="Search Agent Skill">
+                <field name="name"/>
+                <field name="role"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_osint_agent_skill" model="ir.actions.act_window">
+        <field name="name">Agent Skills</field>
+        <field name="res_model">osint.agent.skill</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_osint_agent_skill_search"/>
+    </record>
+
+    <menuitem id="menu_osint_agent_skill"
+              name="Skills"
+              parent="osint_agent.menu_osint_agent"
+              action="action_osint_agent_skill"
+              sequence="60"/>
+</odoo>

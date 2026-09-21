@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug 18 15:15:55 2026
+
+@author: joannes
+"""
+import asyncio
+from fastmcp import Client
+
+host = "http://127.0.0.1/mcp"
+
+
+async def main():
+
+    client = Client(host)
+
+    async with client:
+
+        # Tools
+        try:
+            tools = await client.list_tools()
+            print("\nTOOLS:")
+            for tool in tools:
+                print(f"  {tool.name}: {tool.description}")
+                print(type(tool.inputSchema))
+
+        except Exception as e:
+            print(f"\nTOOLS unavailable: {e}")
+
+        # Resources
+        try:
+            resources = await client.list_resources()
+            print("\nRESOURCES:")
+            for resource in resources:
+                print(f"  {resource.uri}: {resource.name}")
+
+        except Exception as e:
+            print(f"\nRESOURCES unavailable: {e}")
+
+        # Prompts
+        try:
+            prompts = await client.list_prompts()
+            print("\nPROMPTS:")
+            for prompt in prompts:
+                print(f"  {prompt.name}: {prompt.description}")
+
+        except Exception as e:
+            print(f"\nPROMPTS unavailable: {e}")
+
+
+asyncio.run(main())

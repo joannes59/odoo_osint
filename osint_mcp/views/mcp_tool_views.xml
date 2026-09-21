@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_mcp_tool_list" model="ir.ui.view">
+        <field name="name">mcp.tool.list</field>
+        <field name="model">fastmcp.tool</field>
+        <field name="arch" type="xml">
+            <list string="MCP Tools">
+                <field name="mcp_server_id"/>
+                <field name="name"/>
+                <field name="title"/>
+                <button name="action_new_call" type="object" string="Call tool"/>
+                <field name="enabled" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_mcp_tool_form" model="ir.ui.view">
+        <field name="name">mcp.tool.form</field>
+        <field name="model">fastmcp.tool</field>
+        <field name="arch" type="xml">
+            <form string="MCP Tool">
+                <header>
+                    <button name="action_new_call" type="object" string="Call tool"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="title"/>
+                        </group>
+                        <group>
+                            <field name="mcp_server_id"/>
+                            <field name="enabled" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                        
+
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" widget="text"/>
+                        </page>
+                        <page string="Input Schema" name="input_schema">
+                            <field name="input_schema_pretty" widget="text"/>
+                        </page>
+                        <page string="Generator" name="generator">
+                            <group>
+                                <button name="action_generate_input_schema"
+                                        string="Generate" type="object"
+                                        class="btn-primary"
+                                        help="Generate the Input Schema from the parameters below."/>
+                            </group>
+                            <group string="Input Parameters">
+                                <field name="parameter_ids">
+                                    <list string="Input Parameters">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="type"/>
+                                        <field name="required"/>
+                                        <field name="description"/>
+                                    </list>
+                                    <form string="Input Parameter">
+                                        <group>
+                                            <group>
+                                                <field name="name"/>
+                                                <field name="type"/>
+                                            </group>
+                                            <group>
+                                                <field name="required"/>
+                                                <field name="sequence"/>
+                                            </group>
+                                        </group>
+                                        <group string="Description">
+                                            <field name="description" widget="text"/>
+                                        </group>
+                                    </form>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Output Schema" name="output_schema">
+                            <field name="output_schema" widget="text"/>
+                        </page>
+                        <page string="Annotations" name="annotations">
+                            <field name="annotations" widget="text"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_mcp_tool_search" model="ir.ui.view">
+        <field name="name">mcp.tool.search</field>
+        <field name="model">fastmcp.tool</field>
+        <field name="arch" type="xml">
+            <search string="Search MCP Tool">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="mcp_server_id"/>
+            </search>
+        </field>
+    </record>
+    
+    <record id="action_mcp_tool" model="ir.actions.act_window">
+        <field name="name">MCP Tools</field>
+        <field name="res_model">fastmcp.tool</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_mcp_tool_search"/>
+    </record>
+
+    <menuitem id="menu_mcp_tool"
+              name="Tools"
+              parent="osint_mcp.menu_mcp_root"
+              action="action_mcp_tool"
+              sequence="20"/>
+</odoo>

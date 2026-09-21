@@ -18,12 +18,30 @@ class LitellmPrompt(models.Model):
 
     name = fields.Char('Name', compute='_compute_name', store=True)
     model_id = fields.Many2one('litellm.model', string='Model', required=True)
-    provider_id = fields.Many2one(related='model_id.provider_id', string='AI Server', store=True, readonly=True)
+    provider_id = fields.Many2one(related='model_id.provider_id', string='AI Server',
+                                  store=True, readonly=True)
     message_ids = fields.One2many('litellm.prompt.message', 'prompt_id', string='Messages')
     question = fields.Text('Question')
     response = fields.Text('Response')
     keep_alive = fields.Text('keep alive')
     session_id = fields.Many2one('litellm.session', string='Session')
+    
+    message_system = fields.Text('System Message')
+
+    mcp_ids = fields.Many2many('fastmcp.server', string='MCP server')
+
+    def get_tools(self):
+        """ Get the tools available """
+        result = []
+        result += self.mcp_ids.get_tools()
+        
+        return result
+    
+    def _get_message_sequence(self):
+        """ sequence message by 10 step """
+        last = self.message_ids.search([], order='sequence desc', limit=1)
+        print('-------_get_message_sequence-----------', last)
+        return (last.sequence if last else 0) + 10
     
     @api.model
     def to_json(self, response_tool_calls):
@@ -54,48 +72,56 @@ class LitellmPrompt(models.Model):
 
             else:
                 record.name = ""
-
-    def get_tools(self):
-        """ Get the tools available """
-        return []
-
-    def action_send(self, role='user'):
-        """ return llm response to prompt view """
-        self.send(role=role)
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'litellm.prompt',
-            'res_id': self.id,
-            'view_mode': 'form',
-        }
+    
+    def generate_message_sytem(self):
+        """ Get the prompt system, futur function """
+        res = ''
+        return res
         
+    def generate_messages(self):
+        """ List previews message to send to llm """
+        messages = []
+        if self.message_system:
+            messages.append({
+                'role': 'system',
+                'content': self.message_system})
+            
+        for msg in self.message_ids:
+            messages.append({'role': msg.role, 'content': msg.content})
+            
+        return messages
+    
+    def save_question(self):
+        """ Save the question of the user in messages """
+        if self.question:
+            self.write({
+                'message_ids': [(0, 0, {
+                    'role': 'user',
+                    'content': self.question,
+                })],
+                'question': False,
+            })
         
-
     def send(self, role='user'):
         """ Complete a prompt to ask llm response """
         self.ensure_one()
         try:
-            if self.question:
-                self.write({
-                    'message_ids': [(0, 0, {
-                        'role': role,
-                        'content': self.question,
-                    })],
-                    'question': False,
-                })
-
+            self.save_question()
+            start_time = time.time()
+            
             api_base = self.provider_id.host or None
             api_key = self.provider_id.get_apikey() or None
             model = (self.model_id.provider_id.litellm_provider + '/' + self.model_id.model).lower()
             keep_alive = (self.model_id.provider_id.litellm_provider == 'OLLAMA') and '5m' or None
             
+            self.message_system = self.message_system or self.generate_message_sytem()
+            
             tools = self.get_tools() or None       
             tool_choice = tools and "auto" or None
             
-            messages = [{'role': msg.role, 'content': msg.content} for msg in self.message_ids]
-            
-            start_time = time.time()
-                        
+            messages = self.generate_messages()
+                                    
+            # Ask LLM response
             response = litellm.completion(
                 api_base=api_base,
                 api_key=api_key,
@@ -106,20 +132,16 @@ class LitellmPrompt(models.Model):
                 keep_alive=keep_alive,
                 )
             
-            role = 'assistant'
             reply = response.choices[0].message.content
             usage = response.usage
-        
-            
+            tool_calls = response.choices[0].message.tool_calls
+                    
             reply_message = {
-                'role': role,
                 'content': reply,
                 'prompt_eval_count': usage.prompt_tokens,
                 'eval_count': usage.total_tokens,
                 'total_duration': time.time() - start_time,
             }
-            
-            tool_calls = response.choices[0].message.tool_calls
             
             if tool_calls:
                 reply_message['role'] = 'tool'
@@ -132,12 +154,15 @@ class LitellmPrompt(models.Model):
                         'response': reply,
                         'message_ids': [(0, 0, reply_message)],
                     })
+                    
+                    # In case if there are multiple tool_calls, init message
                     reply_message['content'] = None
                     reply_message['prompt_eval_count'] = 0
                     reply_message['eval_count'] = 0
                     reply_message['total_duration'] = 0
                     
             else:
+                reply_message['role'] = 'assistant'
                 self.write({
                     'response': reply,
                     'message_ids': [(0, 0, reply_message)],
@@ -148,9 +173,17 @@ class LitellmPrompt(models.Model):
             raise UserError("Failed to send prompt: %s" % str(e))
 
         return self.response
+    
 
-
-
+    def action_send(self, role='user'):
+        """ return llm response to prompt view """
+        self.send(role=role)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'litellm.prompt',
+            'res_id': self.id,
+            'view_mode': 'form',
+        }
     
 
 

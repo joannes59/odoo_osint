@@ -28,31 +28,46 @@
                             <field name="provider_id"/>
                         </group>
                     </group>
-                    <group string="Messages">
-                        <field name="message_ids">
-                            <list>
-                                <field name="role"/>
-                                <field name="content"/>
-                                <field name="tool_calls"/>
-                                <field name="eval_count"/>                                
-                                <field name="total_duration"/>
-                            </list>
-                            <form>
-                                <group>
-                                    <field name="role"/>
-                                    <field name="content"/>
-                                    <field name="tool_calls"/>
-                                </group>
-                            </form>
-                        </field>
-                    </group>
-                    <group colspan="2">
-                        <group string="Question">
-                            <field name="question" colspan="2" nolabel="1"
-                                   placeholder="Enter your question here..."/>
-                        </group>
-                    </group>
 
+                    <notebook>
+                        <page string="Message" name="system_message">
+
+                                <field name="message_ids">
+                                    <list>
+                                        <field name="role"/>
+                                        <field name="content"/>
+                                        <field name="tool_calls"/>
+                                        <field name="eval_count"/>                                
+                                        <field name="total_duration"/>
+                                    </list>
+                                    <form>
+                                        <group>
+                                            <field name="role"/>
+                                            <field name="content"/>
+                                            <field name="tool_calls"/>
+                                        </group>
+                                    </form>
+                                </field>
+
+                            <group colspan="2">
+                                <group string="Question">
+                                    <field name="question" colspan="2" nolabel="1"
+                                           placeholder="Enter your question here..."/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="System" name="system_message">
+                            <group>
+                                <field name="message_system" widget="text"/>
+                            </group>
+                        </page> 
+                        <page string="MCP server" name="mcp_server">
+                            <group string="MCP Server">
+                                <field name="mcp_ids"/>  
+                            </group>
+                        </page>
+                                               
+                    </notebook>
                 </sheet>
             </form>
         </field>

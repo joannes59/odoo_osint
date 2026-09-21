@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_osint_agent_skill_user,osint.agent.skill.user,model_osint_agent_skill,base.group_user,1,0,0,0
+access_osint_agent_skill_manager,osint.agent.skill.manager,model_osint_agent_skill,base.group_system,1,1,1,1
+access_osint_agent_skill_parameter_user,osint.agent.skill.parameter.user,model_osint_agent_skill_parameter,base.group_user,1,0,0,0
+access_osint_agent_skill_parameter_manager,osint.agent.skill.parameter.manager,model_osint_agent_skill_parameter,base.group_system,1,1,1,1

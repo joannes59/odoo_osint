@@ -16,28 +16,41 @@ class LitellmSession(models.Model):
     prompt_ids = fields.One2many('litellm.prompt', 'session_id', string='Prompts')
     channel_id = fields.Many2one('discuss.channel', string='Channel')
     
+    
     def get_answer(self, channel, body, values, command=False):
         """ Return answer to the user """
         
-        # Get context information
-        browser_context = self.env.context.copy()
-        browser_context.pop('message_post_store', None)
-        browser_context['agent_context'] = self.parse_website_url()
-
-        browser_context_pretty = json.dumps(browser_context,
-                indent=4,
-                ensure_ascii=False
-            )
+        # Create agent context information
+        agent_context = self.parse_website_url()
+        agent_context['channel_id'] = channel.id
+        agent_context['attachment_ids'] = values.get('attachment_ids', [])
+        agent_context['author_id'] = values.get('author_id', 0)
+        
+        for item in ['lang', 'tz', 'uid']:
+            agent_context[item] = self.env.context.get(item, '')
+            
+        
+        def pretty_json(name_dic, origin_dic):
+            """ print debug info of context """                        
+            pretty_json = json.dumps(origin_dic,
+                    indent=4,
+                    ensure_ascii=False
+                )
+            print('---------------------', name_dic, '\n', pretty_json)
+        
+        print('context', self.env.context)
+        pretty_json('agent_context', agent_context)
+        pretty_json('values', values)
+        
+        # arch = view._get_combined_arch()
+        # view = self.env["ir.ui.view"].browse(view_id)
+            
         litellm_model = self.get_litellm_model()
         
-        print('-------browser_context-----------\n', browser_context_pretty)
-        print('---------------body--------------\n', body)
-        print('---------------values------------\n', values)
-        print('---------------litellm_model-----\n', litellm_model)
         
-        prompt = self.get_litellm_prompt(litellm_model)
+        prompt = self.with_context(agent_context=agent_context).get_litellm_prompt(litellm_model)
         prompt.question = body
-        answer = prompt.send()
+        answer = prompt.with_context(agent_context=agent_context).send()
         
       
         
