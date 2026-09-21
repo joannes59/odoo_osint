@@ -8,7 +8,7 @@
         Manage AI agents (res.users as agent) and their integration with the discuss channel.
     """,
     'author': 'Joannes LANDY',
-    'depends': ['base', 'web', 'mail', 'im_livechat', 'osint_litellm', 'osint_fastmcp'],
+    'depends': ['base', 'web', 'mail', 'im_livechat', 'osint_litellm', 'osint_mcp'],
     'data': [
         'security/ir.model.access.csv',
         

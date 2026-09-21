@@ -24,7 +24,7 @@ This project groups several Odoo modules and utility scripts that let you:
 | `osint_website`           | Websites and URLs management with URL parsing                 |
 | `osint_searxng`           | SearxNG meta-search integration with query/result history     |
 | `osint_litellm`           | AI provider & prompt management through LiteLLM               |
-| `osint_fastmcp`           | MCP server proxy, stores MCP capabilities in Odoo             |
+| `osint_mcp`              | MCP server proxy, stores MCP capabilities in Odoo             |
 | `web_widget_mermaid_field`| Odoo widget to display Mermaid diagrams in views              |
 
 ## Additional scripts
@@ -39,7 +39,7 @@ This project groups several Odoo modules and utility scripts that let you:
 ```
 osint_agent ──> discuss.channel / res.users (AI agent)
 osint_litellm ──> AI providers, models, prompts (LiteLLM)
-osint_fastmcp ──> MCP server capabilities exposed to prompts
+osint_mcp ──> MCP server capabilities exposed to prompts
 osint_searxng ──> web searches ──> osint_website (URLs/websites)
 ```
 

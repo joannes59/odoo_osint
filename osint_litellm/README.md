@@ -11,7 +11,7 @@ Base module of the OSINT suite for managing local and remote AI providers in Odo
 - Manage API keys per provider with user/group restrictions.
 - Create prompts (`litellm.prompt`) with a message history and send them (`Send`).
 - Store token usage and cost per message.
-- Handle **tool calls** returned by the model (compatible with `osint_fastmcp`).
+- Handle **tool calls** returned by the model (compatible with `osint_mcp`).
 
 ## Models
 

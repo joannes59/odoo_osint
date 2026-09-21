@@ -100,6 +100,16 @@ class FastMCPServer(models.Model):
     
         return asyncio.run(main())
 
+    def get_server_apikey(self):
+        """ Get server apikey if needed """
+        if self.apikey_ids:
+            # Todo complete the search with user right
+            apikey = self.apikey_ids[0].apikey
+        else:
+            apikey = None
+        return apikey
+        
+
     def action_fetch_metadata(self):
         """Action triggered by the button to retrieve metadata."""
         self.ensure_one()
@@ -111,13 +121,9 @@ class FastMCPServer(models.Model):
             raise UserError("Please configure a valid MCP server URL.")
 
         _logger.info(f"Connecting to MCP server: {self.server_url}")
-        if self.apikey_ids:
-            # Todo complete the search with user right
-            apikey = self.apikey_ids[0].apikey
-        else:
-            apikey = None
-            
-        result = self._run_async_mcp_fetch(self.server_url)
+
+        apikey = self.get_server_apikey()
+        result = self._run_async_mcp_fetch(self.server_url, apikey=apikey)
 
         if result['status'] == 'success':
             for tool in result['tools']:

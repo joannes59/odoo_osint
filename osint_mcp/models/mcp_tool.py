@@ -27,6 +27,36 @@ class FastMCPTool(models.Model):
     
     input_schema_pretty = fields.Text(string="Input Schema", compute="_json_pretty")
 
+    call_ids = fields.One2many('fastmcp.tool.call', 'tool_id', string='Calls')
+
+    def call_tool(self, arguments=None, timeout=60):
+        """Programmatic entry point: create a call, run it, return the record.
+
+            call = tool.call_tool({'query': 'odoo'})
+            call.state, call.result_text, call.structured_content
+        """
+        self.ensure_one()
+        call = self.env['fastmcp.tool.call'].create({
+            'tool_id': self.id,
+            'arguments': json.dumps(arguments or {}, ensure_ascii=False),
+            'timeout': timeout,
+        })
+        call.action_call_tool()
+        return call
+
+    def action_new_call(self):
+        """Open a new call form pre-filled with this tool."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.name,
+            'res_model': 'fastmcp.tool.call',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {'default_tool_id': self.id},
+        }
+
+
     @api.depends("input_schema")
     def _json_pretty(self):
         """ Return json in human readable text """

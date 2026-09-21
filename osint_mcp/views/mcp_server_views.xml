@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_fastmcp_server_list" model="ir.ui.view">
-        <field name="name">fastmcp.server.list</field>
+    <record id="view_mcp_server_list" model="ir.ui.view">
+        <field name="name">mcp.server.list</field>
         <field name="model">fastmcp.server</field>
         <field name="arch" type="xml">
             <list string="MCP Servers">
@@ -12,8 +12,8 @@
         </field>
     </record>
 
-    <record id="view_fastmcp_server_form" model="ir.ui.view">
-        <field name="name">fastmcp.server.form</field>
+    <record id="view_mcp_server_form" model="ir.ui.view">
+        <field name="name">mcp.server.form</field>
         <field name="model">fastmcp.server</field>
         <field name="arch" type="xml">
             <form string="MCP Server">
@@ -40,6 +40,7 @@
                                 <list string="MCP Tools">
                                     <field name="name"/>
                                     <field name="description"/>
+                                    <button name="action_new_call" type="object" string="Call tool"/>
                                 </list>
                                 <form>
                                     <group>
@@ -110,8 +111,8 @@
         </field>
     </record>
 
-    <record id="view_fastmcp_server_search" model="ir.ui.view">
-        <field name="name">fastmcp.server.search</field>
+    <record id="view_mcp_server_search" model="ir.ui.view">
+        <field name="name">mcp.server.search</field>
         <field name="model">fastmcp.server</field>
         <field name="arch" type="xml">
             <search string="Search MCP Server">
@@ -121,16 +122,16 @@
         </field>
     </record>
 
-    <record id="action_fastmcp_server" model="ir.actions.act_window">
+    <record id="action_mcp_server" model="ir.actions.act_window">
         <field name="name">MCP Servers</field>
         <field name="res_model">fastmcp.server</field>
         <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="view_fastmcp_server_search"/>
+        <field name="search_view_id" ref="view_mcp_server_search"/>
     </record>
 
-    <menuitem id="menu_fastmcp_server"
+    <menuitem id="menu_mcp_server"
               name="MCP Servers"
-              parent="osint_fastmcp.menu_fastmcp_root"
-              action="action_fastmcp_server"
+              parent="osint_mcp.menu_mcp_root"
+              action="action_mcp_server"
               sequence="10"/>
 </odoo>

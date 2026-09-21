@@ -10,14 +10,16 @@
     """,
     'author': 'Joannes LANDY',
     'depends': ['osint_base'],
+    'external_dependencies': {'python': ['mcp']},
     'data': [
         'security/ir.model.access.csv',
 
         'views/menu_views.xml',        
-        'views/fastmcp_server_views.xml',
-        'views/fastmcp_tool_views.xml',
-        'views/fastmcp_prompt_views.xml',
-        'views/fastmcp_resource_views.xml',
+        'views/mcp_server_views.xml',
+        'views/mcp_tool_views.xml',
+        'views/mcp_resource_views.xml',
+        'views/mcp_prompt_views.xml',
+        'views/mcp_tool_call_views.xml',
 
     ],
     'installable': True,

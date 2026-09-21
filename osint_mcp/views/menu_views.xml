@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_fastmcp_root"
+    <menuitem id="menu_mcp_root"
               name="FastMCP"
               parent="osint_base.menu_osint_base_configuration"
               sequence="20" />

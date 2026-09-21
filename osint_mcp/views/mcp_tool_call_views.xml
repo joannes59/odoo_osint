@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fastmcp_tool_call_view_list" model="ir.ui.view">
+        <field name="name">fastmcp.tool.call.list</field>
+        <field name="model">fastmcp.tool.call</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'error'" decoration-muted="state == 'draft'">
+                <field name="create_date"/>
+                <field name="tool_id"/>
+                <field name="mcp_server_id"/>
+                <field name="arguments"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'success'"
+                       decoration-danger="state == 'error'"
+                       decoration-info="state == 'draft'"/>
+                <field name="duration"/>
+                <field name="create_uid" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="fastmcp_tool_call_view_form" model="ir.ui.view">
+        <field name="name">fastmcp.tool.call.form</field>
+        <field name="model">fastmcp.tool.call</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_call_tool" type="object" string="Call tool"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,success"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="display_name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="tool_id" readonly="state != 'draft'"/>
+                            <field name="mcp_server_id"/>
+                            <field name="timeout" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="call_date"/>
+                            <field name="duration"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Arguments" name="arguments">
+                            <field name="arguments" nolabel="1"
+                                   widget="ace" options="{'mode': 'js'}"
+                                   readonly="state != 'draft'"/>
+                            <separator string="Tool description"
+                                       invisible="not tool_description"/>
+                            <field name="tool_description" nolabel="1"
+                                   invisible="not tool_description"/>
+                            <separator string="Input schema (reference)"
+                                       invisible="not input_schema_text"/>
+                            <field name="input_schema_text" nolabel="1"
+                                   widget="ace" options="{'mode': 'js'}"
+                                   invisible="not input_schema_text"/>
+                        </page>
+                        <page string="Response" name="response" invisible="state == 'draft'">
+                            <group>
+                                <field name="error_message" invisible="not error_message"/>
+                                <field name="result_text"/>
+                            </group>
+                            <separator string="Structured content"
+                                       invisible="not structured_content"/>
+                            <field name="structured_content" nolabel="1"
+                                   widget="ace" options="{'mode': 'js'}"
+                                   invisible="not structured_content"/>
+                        </page>
+                        <page string="Raw response" name="raw" invisible="state == 'draft'">
+                            <field name="raw_response" nolabel="1"
+                                   widget="ace" options="{'mode': 'js'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="fastmcp_tool_call_view_search" model="ir.ui.view">
+        <field name="name">fastmcp.tool.call.search</field>
+        <field name="model">fastmcp.tool.call</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="tool_id"/>
+                <field name="mcp_server_id"/>
+                <field name="arguments"/>
+                <field name="result_text"/>
+                <filter string="Success" name="success" domain="[('state', '=', 'success')]"/>
+                <filter string="Error" name="error" domain="[('state', '=', 'error')]"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+
+            </search>
+        </field>
+    </record>
+
+    <record id="fastmcp_tool_call_action" model="ir.actions.act_window">
+        <field name="name">MCP Tool Calls</field>
+        <field name="res_model">fastmcp.tool.call</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="fastmcp_tool_call_menu"
+              name="MCP Tool Calls"
+              action="fastmcp_tool_call_action"
+              parent="osint_mcp.menu_mcp_root"
+              sequence="50"/>
+
+</odoo>
