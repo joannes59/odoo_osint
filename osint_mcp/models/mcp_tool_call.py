@@ -7,6 +7,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 from .mcp_client import flatten_exception, open_mcp_session
+from odoo.tools.safe_eval import safe_eval
+import traceback
 
 _logger = logging.getLogger(__name__)
 
@@ -14,6 +16,7 @@ _logger = logging.getLogger(__name__)
 class FastMCPToolCall(models.Model):
     _name = 'fastmcp.tool.call'
     _description = 'MCP Tool Call'
+    _inherit = ['json.field.editor.mixin']
     _order = 'id desc'
 
     tool_id = fields.Many2one(
@@ -25,13 +28,11 @@ class FastMCPToolCall(models.Model):
         store=True, index=True, readonly=True,
     )
     tool_description = fields.Text(related='tool_id.description', readonly=True)
-    input_schema_text = fields.Text(
-        'Input Schema', compute='_compute_input_schema_text',
-    )
+    input_schema = fields.Json(related='tool_id.input_schema', readonly=True)
 
     # --- Call parameters -------------------------------------------------
-    arguments = fields.Text(
-        'Arguments (JSON)', default='{}',
+    arguments = fields.Json(
+        'Arguments (JSON)', 
         help="JSON object passed as `arguments` to call_tool.",
     )
     timeout = fields.Integer(
@@ -60,46 +61,10 @@ class FastMCPToolCall(models.Model):
             date = call.create_date.strftime('%Y-%m-%d %H:%M') if call.create_date else _("New")
             call.display_name = f"{call.tool_id.name or ''} - {date}"
 
-    @api.depends('tool_id.input_schema')
-    def _compute_input_schema_text(self):
-        for call in self:
-            schema = call.tool_id.input_schema
-            call.input_schema_text = (
-                json.dumps(schema, indent=2, ensure_ascii=False) if schema else False
-            )
-
-    @api.constrains('arguments')
-    def _check_arguments(self):
-        for call in self:
-            call._get_arguments_dict()
 
     # ---------------------------------------------------------------------
     # Helpers
     # ---------------------------------------------------------------------
-    def _get_arguments_dict(self):
-        self.ensure_one()
-        raw = (self.arguments or '').strip()
-        if not raw:
-            return {}
-        try:
-            args = json.loads(raw)
-        except ValueError as e:
-            raise ValidationError(_("Arguments must be valid JSON: %s", e))
-        if not isinstance(args, dict):
-            raise ValidationError(_("Arguments must be a JSON object."))
-        return args
-
-    def _check_required_arguments(self, arguments):
-        """Light validation against the `required` list of the tool input schema."""
-        self.ensure_one()
-        schema = self.tool_id.input_schema or {}
-        required = schema.get('required') or []
-        missing = [key for key in required if key not in arguments]
-        if missing:
-            raise UserError(_(
-                "Missing required argument(s) for tool %(tool)s: %(missing)s",
-                tool=self.tool_id.name, missing=", ".join(missing),
-            ))
 
     @api.model
     def _run_async_call(self, server_url, apikey, tool_name, arguments, timeout=None):
@@ -144,41 +109,95 @@ class FastMCPToolCall(models.Model):
     # Actions
     # ---------------------------------------------------------------------
     def action_call_tool(self):
+        """ MCP server call tool """ 
         for call in self:
-            if call.state != 'draft':
-                raise UserError(_(
-                    "This call has already been executed. Duplicate it to run it again."
-                ))
-            call._execute()
-        return True
+            start = time.monotonic()
+            call.call_date = fields.Datetime.now()
+            if call._check_required_arguments():
+            
+                if call.mcp_server_id.built_in:
+                    call._execute_built_in({})
+                else:
+                    call._execute_external()
+                    
+            call.duration = time.monotonic() - start
 
-    def _execute(self):
+
+    def _check_required_arguments(self):
+        """Light validation against the `required` list of the tool input schema."""
         self.ensure_one()
-        tool = self.tool_id
-        server = tool.mcp_server_id
+        schema = self.tool_id.input_schema or {}
+        required = schema.get('required') or []
+        missing = [key for key in required if key not in self.arguments]
+        if missing:
+            self.state = 'error'
+            e = ", ".join(missing)
+            self.error_message = f"Missing required argument(s): {e}"
+            return False
+        else:
+            return True
 
-        # Validation errors are raised to the user, nothing is logged
-        arguments = self._get_arguments_dict()
-        self._check_required_arguments(arguments)
+    def _execute_external(self):
+        """ Call external MCP server """
+        self.ensure_one()
+        server = self.tool_id.mcp_server_id
+        print('--------self.arguments--------', self.arguments)
+        print('--------self.arguments--------', type(self.arguments))
 
-        vals = {'call_date': fields.Datetime.now()}
-        start = time.monotonic()
         try:
             result = self._run_async_call(
                 server.server_url,
                 server.get_server_apikey(),
-                tool.name,
-                arguments,
+                self.tool_id.name,
+                self.arguments,
                 self.timeout,
             )
-        except (Exception, BaseExceptionGroup) as e:
-            _logger.warning("MCP call_tool %s failed: %s", tool.name, e)
-            message = flatten_exception(e)
-            if isinstance(e, asyncio.TimeoutError):
-                message = _("Timeout after %s s", self.timeout)
-            vals.update(state='error', error_message=message)
-        else:
-            vals.update(self._prepare_result_vals(result))
-        vals['duration'] = time.monotonic() - start
-        self.write(vals)
+        except Exception as e:
+            error_message = ''
+            for exc in e.exceptions:
+                error_message += flatten_exception(exc)
 
+            self.state = 'error'
+            self.error_message = error_message
+
+        else:
+            vals = self._prepare_result_vals(result)
+            self.write(vals)
+            
+            
+    def _get_eval_context(self):
+        """Context to push on execute python."""
+        self.ensure_one()
+
+        eval_context = {
+            'env': self.env,
+            'tool_call': self,
+            'args': self.arguments or {},
+            'result': {},   # the python code return response in this dic
+            'log': lambda msg: self._logger_info(msg), 
+        }
+        return eval_context
+
+    def _execute_built_in(self):
+        """ Buit in function to execute """
+        self.ensure_one()
+        eval_context = self._get_eval_context()
+        code = (self.tool_id.code or '').strip()
+        if not code:
+            self.state = 'error'
+            self.error_message = "No code on this call tool"
+        else:
+            try:
+                safe_eval(
+                    code,
+                    globals_dict=eval_context,
+                    mode='exec',
+                    nocopy=True,
+                )
+            except Exception as e:
+                self.state = 'error'
+                self.error_message = str(e)
+            else:            
+                self.result = eval_context.get('result', {})
+                self.state = 'done'
+    

@@ -77,6 +77,9 @@
                                 </field>
                             </group>
                         </page>
+                        <page string="Python code" name="code">
+                            <field name="code" widget="ace" options="{'mode': 'python'}"/>
+                        </page>
                         <page string="Output Schema" name="output_schema">
                             <field name="output_schema" widget="text"/>
                         </page>
