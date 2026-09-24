@@ -49,17 +49,21 @@
                     <notebook>
                         <page string="Arguments" name="arguments">
                             <field name="arguments" nolabel="1"
-                                   widget="ace" options="{'mode': 'js'}"
-                                   readonly="state != 'draft'"/>
-                            <separator string="Tool description"
-                                       invisible="not tool_description"/>
-                            <field name="tool_description" nolabel="1"
-                                   invisible="not tool_description"/>
-                            <separator string="Input schema (reference)"
-                                       invisible="not input_schema_text"/>
-                            <field name="input_schema_text" nolabel="1"
-                                   widget="ace" options="{'mode': 'js'}"
-                                   invisible="not input_schema_text"/>
+                                 widget="json_readonly"
+                                  readonly="state != 'draft'"/>
+                            <button name="action_edit_json_field"
+                                type="object"
+                                string="Edit"
+                                context="{'field_name': 'arguments'}"/>
+                                
+                            <notebook>
+                                <page string="Tool description">
+                                    <field name="tool_description" nolabel="1"/>
+                                </page>
+                                <page string="Input schema (reference)">
+                                    <field name="input_schema" nolabel="1" widget="json_readonly"/>
+                                </page>
+                            </notebook>       
                         </page>
                         <page string="Response" name="response" invisible="state == 'draft'">
                             <group>

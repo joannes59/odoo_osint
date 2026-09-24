@@ -4,7 +4,8 @@
 from odoo import api, fields, models
 import json
 from jsonschema import Draft7Validator
-
+from odoo.tools.safe_eval import test_python_expr
+from odoo.exceptions import ValidationError
 
 class FastMCPTool(models.Model):
     _name = 'fastmcp.tool'
@@ -19,6 +20,7 @@ class FastMCPTool(models.Model):
     input_schema = fields.Json('Input Schema')
     output_schema = fields.Json('Output Schema')
     annotations = fields.Json('Annotations')
+    code = fields.Text('Python code')
     
     enabled = fields.Boolean('Enabled', default=True)
     
@@ -28,6 +30,14 @@ class FastMCPTool(models.Model):
     input_schema_pretty = fields.Text(string="Input Schema", compute="_json_pretty")
 
     call_ids = fields.One2many('fastmcp.tool.call', 'tool_id', string='Calls')
+
+
+    @api.constrains('code')
+    def _check_python_code(self):
+        for tool in self.sudo().filtered('code'):
+            msg = test_python_expr(expr=tool.code.strip(), mode="exec")
+            if msg:
+                raise ValidationError(msg)
 
     def call_tool(self, arguments=None, timeout=60):
         """Programmatic entry point: create a call, run it, return the record.

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="osint_base.JsonReadonlyField">
+        <div class="o_json_readonly_field">
+            <t t-if="isEmpty">
+                <span class="text-muted fst-italic">Aucune donnée</span>
+            </t>
+            <t t-else="">
+                <pre class="o_json_readonly_content"><t t-esc="formattedJson"/></pre>
+            </t>
+        </div>
+    </t>
+</templates>

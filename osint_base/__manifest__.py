@@ -18,7 +18,17 @@
         'security/ir.model.access.csv',
 
         'views/menu_views.xml',
+        "views/json_editor_wizard_views.xml"
     ],
+    
+    'assets': {
+    'web.assets_backend': [
+        'osint_base/static/src/fields/json_readonly_field.js',
+        'osint_base/static/src/fields/json_readonly_field.xml',
+        'osint_base/static/src/fields/json_readonly_field.scss',
+    ],
+},
+    
     'installable': True,
     'application': True,
     'license': 'LGPL-3',
