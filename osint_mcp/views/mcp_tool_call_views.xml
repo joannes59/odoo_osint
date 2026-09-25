@@ -49,12 +49,11 @@
                     <notebook>
                         <page string="Arguments" name="arguments">
                             <field name="arguments" nolabel="1"
-                                 widget="json_readonly"
-                                  readonly="state != 'draft'"/>
+                                 widget="json_readonly" />
                             <button name="action_edit_json_field"
                                 type="object"
                                 string="Edit"
-                                context="{'field_name': 'arguments'}"/>
+                                context="{'field_name': 'arguments', 'input_schema': input_schema}"/>
                                 
                             <notebook>
                                 <page string="Tool description">

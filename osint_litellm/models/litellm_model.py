@@ -42,24 +42,6 @@ class LitellmModel(models.Model):
     response_format = fields.Boolean('Response Format')
     json_schema = fields.Boolean('JSON Schema')
 
-    
-    description_pretty = fields.Text(
-            string="Description",
-            compute="_compute_description_pretty"
-        )
-
-    @api.depends("description")
-    def _compute_description_pretty(self):
-        for rec in self:
-            description_pretty = ""
-            
-            if rec.description:
-                description_pretty = json.dumps(
-                        rec.description,
-                        indent=4,
-                        ensure_ascii=False
-                    )
-            rec.description_pretty = description_pretty
                     
     def action_update_model_support(self):
         """ Update response_format and json_schema fields from litellm."""

@@ -11,7 +11,9 @@
                 <field name="res_model" invisible="1"/>
                 <field name="res_id" invisible="1"/>
                 <field name="field_name" invisible="1"/>
-                <field name="json_text" widget="ace" options="{'mode': 'json'}" nolabel="1"/>
+                <field name="json_text" widget="ace" options="{'language': 'json'}" nolabel="1"/>
+                <separator string="Input schema" invisible="not input_schema"/>
+                <field name="input_schema" widget="json_readonly" invisible="not input_schema"/>
                 <footer>
                     <button name="action_save" type="object" string="Enregistrer" class="btn-primary"/>
                     <button string="Annuler" class="btn-secondary" special="cancel"/>

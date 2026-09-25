@@ -26,6 +26,11 @@
         'osint_base/static/src/fields/json_readonly_field.js',
         'osint_base/static/src/fields/json_readonly_field.xml',
         'osint_base/static/src/fields/json_readonly_field.scss',
+        
+        'osint_base/static/lib/mermaid/mermaid.min.js',
+        'osint_base/static/src/fields/mermaid_field.js',
+        'osint_base/static/src/fields/mermaid_field.xml',
+        'osint_base/static/src/fields/mermaid_field.scss',
     ],
 },
     

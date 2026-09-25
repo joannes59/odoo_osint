@@ -17,10 +17,7 @@
         <field name="model">litellm.prompt</field>
         <field name="arch" type="xml">
             <form string="Prompt">
-                <header>
-                    <button name="action_send" string="Send" type="object"
-                            class="btn-primary"/>
-                </header>
+
                 <sheet>
                     <group>
                         <group name="configuration" string="Configuration">
@@ -44,7 +41,7 @@
                                         <group>
                                             <field name="role"/>
                                             <field name="content"/>
-                                            <field name="tool_calls"/>
+                                            <field name="tool_calls" widget="json_readonly"/>
                                         </group>
                                     </form>
                                 </field>
@@ -53,6 +50,8 @@
                                 <group string="Question">
                                     <field name="question" colspan="2" nolabel="1"
                                            placeholder="Enter your question here..."/>
+                                           <button name="action_send" string="Send" type="object"
+                                                   class="btn-primary"/>
                                 </group>
                             </group>
                         </page>
@@ -66,7 +65,11 @@
                                 <field name="mcp_ids"/>  
                             </group>
                         </page>
-                                               
+                        <page string="Note" name="note">
+
+                                <field name="note"/>  
+       
+                        </page>                  
                     </notebook>
                 </sheet>
             </form>

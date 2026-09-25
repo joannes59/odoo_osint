@@ -14,13 +14,14 @@ from odoo.exceptions import UserError
 
 class JsonEditorWizard(models.TransientModel):
     _name = 'json.editor.wizard'
-    _description = "Éditeur de champ JSON"
+    _description = "JSON field editor"
 
     res_model = fields.Char(required=True)
     res_id = fields.Integer(required=True)
     field_name = fields.Char(required=True)
     field_label = fields.Char(compute='_compute_field_label')
     json_text = fields.Text(string="JSON")
+    input_schema = fields.Json("Input schema")
 
     @api.depends('res_model', 'field_name')
     def _compute_field_label(self):
@@ -39,15 +40,19 @@ class JsonEditorWizard(models.TransientModel):
         res_model = self.env.context.get('default_res_model')
         res_id = self.env.context.get('default_res_id')
         field_name = self.env.context.get('default_field_name')
+        input_schema = self.env.context.get('input_schema')
 
         if res_model and res_id and field_name:
             record = self.env[res_model].browse(res_id)
             field_def = record._fields.get(field_name)
             if not field_def or field_def.type != 'json':
-                raise UserError(_("Le champ '%s' n'est pas un champ JSON.") % field_name)
+                raise UserError(_("'%s' is not a JSON field.") % field_name)
             value = record[field_name] or {}
             res['json_text'] = json.dumps(value, indent=4, ensure_ascii=False)
-
+            
+            if input_schema:
+                res['input_schema'] = input_schema
+            
         return res
 
     def action_save(self):
@@ -55,7 +60,7 @@ class JsonEditorWizard(models.TransientModel):
         try:
             value = json.loads(self.json_text or '{}')
         except ValueError as e:
-            raise UserError(_("JSON invalide : %s") % e)
+            raise UserError(_("JSON not valide : %s") % e)
 
         record = self.env[self.res_model].browse(self.res_id)
         record.write({self.field_name: value})

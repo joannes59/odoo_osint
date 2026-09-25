@@ -35,5 +35,6 @@ class DiscussChannelMember(models.Model):
         last_message = self.env['mail.message'].search(domain, order="id DESC", limit=1)
         if not last_message:
             return
+        
         self._set_last_seen_message(last_message)
         self._set_new_message_separator(last_message.id + 1)

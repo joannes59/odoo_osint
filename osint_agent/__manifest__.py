@@ -8,15 +8,16 @@
         Manage AI agents (res.users as agent) and their integration with the discuss channel.
     """,
     'author': 'Joannes LANDY',
-    'depends': ['base', 'web', 'mail', 'im_livechat', 'osint_litellm', 'osint_mcp'],
+    'depends': ['mail', 'im_livechat', 'osint_litellm', 'osint_mcp'],
     'data': [
         'security/ir.model.access.csv',
         
         'views/menu_views.xml',
-        'views/res_users_views.xml',
+
         'views/osint_agent_skill_views.xml',
         'views/osint_agent_skill_parameter_views.xml',
         ],
+    
     'installable': True,
     'license': 'LGPL-3',
 }

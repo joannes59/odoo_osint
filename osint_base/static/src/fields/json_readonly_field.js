@@ -1,14 +1,13 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
+import { standardFieldProps } from "@web/views/fields/standard_field_props";
 import { Component } from "@odoo/owl";
 
 export class JsonReadonlyField extends Component {
     static template = "osint_base.JsonReadonlyField";
     static props = {
-        ...Component.props,
-        record: { type: Object },
-        name: { type: String },
+        ...standardFieldProps,
     };
 
     get value() {
@@ -31,7 +30,7 @@ export class JsonReadonlyField extends Component {
 
 export const jsonReadonlyField = {
     component: JsonReadonlyField,
-    displayName: "JSON (Read only)",
+    displayName: "JSON (lecture seule)",
     supportedTypes: ["json"],
 };
 

@@ -29,6 +29,8 @@ class LitellmPrompt(models.Model):
     message_system = fields.Text('System Message')
 
     mcp_ids = fields.Many2many('fastmcp.server', string='MCP server')
+    
+    note = fields.Text('Note')
 
     def get_tools(self):
         """ Get the tools available """
