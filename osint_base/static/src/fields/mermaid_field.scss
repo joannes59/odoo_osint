@@ -1,0 +1,17 @@
+.o_mermaid_field {
+    .o_mermaid_container {
+        display: flex;
+        justify-content: center;
+        overflow: auto;
+        max-width: 100%;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 12px;
+        background-color: #fff;
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+}

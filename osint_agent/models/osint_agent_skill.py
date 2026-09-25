@@ -62,13 +62,15 @@ class OsintAgentSkill(models.Model):
         """ Create parameters used in this skills {{parameter}}."""
         
         for skill in self:
+            if not  skill.description:
+                continue
             # parameter is like {{parameter_name}} ^[a-z0-9]+(-[a-z0-9]+)*$
             list_parameters = re.findall(r"\{\{([^{}]+)\}\}", skill.description)
             
             for parameter_name in list_parameters:
                 parameter = self.find_parameter(parameter_name)
                 
-                if not re.fullmatch(r'[a-z][a-z0-9_-]*', parameter):
+                if not re.fullmatch(r'[a-z][a-z0-9_-]*', parameter.name):
                     raise ValidationError(_('The parameter should contain only lowercase alphanumeric characters, underscore, and dash, and it should start with a letter.'))
                 
                 skill.parameter_ids = [Command.link(parameter.id)]

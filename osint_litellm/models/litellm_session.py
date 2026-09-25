@@ -6,6 +6,9 @@ import json
 from odoo.http import request
 from urllib.parse import parse_qs, urlparse
 
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class LitellmSession(models.Model):
     _name = 'litellm.session'
@@ -29,19 +32,10 @@ class LitellmSession(models.Model):
         for item in ['lang', 'tz', 'uid']:
             agent_context[item] = self.env.context.get(item, '')
             
-        
-        def pretty_json(name_dic, origin_dic):
-            """ print debug info of context """                        
-            pretty_json = json.dumps(origin_dic,
-                    indent=4,
-                    ensure_ascii=False
-                )
-            print('---------------------', name_dic, '\n', pretty_json)
-        
-        print('context', self.env.context)
-        pretty_json('agent_context', agent_context)
-        pretty_json('values', values)
-        
+        if agent_context.get('debug'):
+            msg = 'Agent context:\n' + json.dumps(agent_context, indent=4, ensure_ascii=False)
+            _logger.info(msg)
+            
         # arch = view._get_combined_arch()
         # view = self.env["ir.ui.view"].browse(view_id)
             
@@ -51,8 +45,6 @@ class LitellmSession(models.Model):
         prompt = self.with_context(agent_context=agent_context).get_litellm_prompt(litellm_model)
         prompt.question = body
         answer = prompt.with_context(agent_context=agent_context).send()
-        
-      
         
         return answer
     
@@ -93,15 +85,10 @@ class LitellmSession(models.Model):
             
             if res['path'].startswith('/odoo/'):
                 res['side'] = 'backend'
-                res['view_type'] = 'list'
                 res['res_id'] = 0
                 
                 backend_path = res['path'].replace('\n', '').split('/')
                 
-                if len(backend_path) >= 3 and backend_path[-1].isnumeric():
-                    res['res_id'] = int(backend_path[-1])
-                    res['view_type'] = 'form'
-
                 action = backend_path[2]
                 act_window = self.env['ir.actions.act_window']
                 
@@ -117,7 +104,22 @@ class LitellmSession(models.Model):
                 if act_window:
                     res['res_model'] = act_window.res_model
                     res['act_window_id'] = act_window.id
+                    res['view_mode'] = act_window.view_mode
+                    res['view_domain'] = act_window.domain
+                    res['view_type'] = act_window.view_mode.split(',')[0]
                     
+                if res['query'] and res['query'].get('view_type'):
+                    res['view_type'] = res['query']['view_type'][0]
+
+                if len(backend_path) >= 3 and backend_path[-1].isnumeric():
+                    res['res_id'] = int(backend_path[-1])
+                    res['view_type'] = 'form' 
+                    
+                if res['query'] and res['query'].get('debug'):
+                    res['debug'] = True
+                else:
+                    res['debug'] = False
+                        
             else:
                 res['side'] = 'website'
                 

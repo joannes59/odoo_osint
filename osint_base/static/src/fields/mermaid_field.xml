@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="osint_base.MermaidField">
+        <div class="o_mermaid_field">
+            <t t-if="state.error">
+                <div class="alert alert-danger o_mermaid_error" role="alert">
+                    Erreur de rendu du diagramme Mermaid : <t t-esc="state.error"/>
+                </div>
+            </t>
+            <div class="o_mermaid_container" t-ref="container"/>
+        </div>
+    </t>
+</templates>
