@@ -33,7 +33,7 @@
                                     <list>
                                         <field name="role"/>
                                         <field name="content"/>
-                                        <field name="tool_calls"/>
+                                        <field name="response_tool_call_id"/>
                                         <field name="eval_count"/>                                
                                         <field name="total_duration"/>
                                     </list>
@@ -41,6 +41,7 @@
                                         <group>
                                             <field name="role"/>
                                             <field name="content"/>
+                                            <field name="response_tool_call_id"/> 
                                             <field name="tool_calls" widget="json_readonly"/>
                                         </group>
                                     </form>

@@ -38,7 +38,15 @@ class LitellmPromptMessage(models.Model):
     total_duration = fields.Float("Duration")
     
     tool_call_id = fields.Char('Tool call ID')
-    tool_calls = fields.Json('Tool calls')
+    tool_calls = fields.Json('Tool calls (JSON)')
+    response_tool_call_id = fields.Many2one('fastmcp.tool.call', string="Tool call")
+    
+
+            
+                
+        
+        
+        
     
 
         

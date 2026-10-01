@@ -41,7 +41,7 @@
                             <field name="description" widget="text"/>
                         </page>
                         <page string="Input Schema" name="input_schema">
-                            <field name="input_schema_pretty" widget="text"/>
+                            <field name="input_schema" widget="json_readonly"/>
                         </page>
                         <page string="Generator" name="generator">
                             <group>
@@ -81,7 +81,7 @@
                             <field name="code" widget="ace" options="{'mode': 'python'}"/>
                         </page>
                         <page string="Output Schema" name="output_schema">
-                            <field name="output_schema" widget="text"/>
+                            <field name="output_schema" widget="json_readonly"/>
                         </page>
                         <page string="Annotations" name="annotations">
                             <field name="annotations" widget="text"/>

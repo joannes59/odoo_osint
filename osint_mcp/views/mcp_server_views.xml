@@ -47,8 +47,8 @@
                                         <field name="name"/>
                                         <field name="title"/>
                                         <field name="description"/>
-                                        <field name="input_schema_pretty"/>
-                                        <field name="output_schema"/>
+                                        <field name="input_schema" widget="json_readonly"/>
+                                        <field name="output_schema" widget="json_readonly"/>
                                     </group>
                                 </form>
                             </field>

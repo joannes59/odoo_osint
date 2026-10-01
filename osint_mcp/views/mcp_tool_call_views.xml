@@ -72,12 +72,12 @@
                             <separator string="Structured content"
                                        invisible="not structured_content"/>
                             <field name="structured_content" nolabel="1"
-                                   widget="ace" options="{'mode': 'js'}"
+                                   widget="json_readonly" 
                                    invisible="not structured_content"/>
                         </page>
                         <page string="Raw response" name="raw" invisible="state == 'draft'">
                             <field name="raw_response" nolabel="1"
-                                   widget="ace" options="{'mode': 'js'}"/>
+                                   widget="json_readonly" />
                         </page>
                     </notebook>
                 </sheet>

@@ -42,7 +42,6 @@ class LitellmPrompt(models.Model):
     def _get_message_sequence(self):
         """ sequence message by 10 step """
         last = self.message_ids.search([], order='sequence desc', limit=1)
-        print('-------_get_message_sequence-----------', last)
         return (last.sequence if last else 0) + 10
     
     @api.model
@@ -65,7 +64,13 @@ class LitellmPrompt(models.Model):
         for record in self:
             len_content = 120
             if record.message_ids:
-                msg = record.message_ids[-1]
+                msg_start = record.message_ids[0]
+                msg_end = record.message_ids[-1]
+                if  msg_end.content:
+                    msg = msg_end
+                else:
+                    msg = msg_start
+                    
                 content = msg.content or ''
                 if len(content) > len_content:
                     content = content[:len_content] + '...'
@@ -134,11 +139,15 @@ class LitellmPrompt(models.Model):
                 keep_alive=keep_alive,
                 )
             
+            # get llm response
             reply = response.choices[0].message.content
             usage = response.usage
             tool_calls = response.choices[0].message.tool_calls
+            tool_message_ids = self.env['litellm.prompt.message']
                     
+            # Save llm response in message_ids
             reply_message = {
+                'role': 'assistant',
                 'content': reply,
                 'prompt_eval_count': usage.prompt_tokens,
                 'eval_count': usage.total_tokens,
@@ -146,29 +155,30 @@ class LitellmPrompt(models.Model):
             }
             
             if tool_calls:
-                reply_message['role'] = 'tool'
+                reply_message['prompt_eval_count'] = reply_message['prompt_eval_count'] / len(tool_calls)
+                reply_message['eval_count'] = reply_message['eval_count'] / len(tool_calls)
+                reply_message['total_duration'] = reply_message['total_duration'] / len(tool_calls)
 
                 for tool in tool_calls:
                     reply_message['tool_call_id'] = tool.id
-                    reply_message['tool_calls'] = self.to_json(tool)
-                
-                    self.write({
-                        'response': reply,
-                        'message_ids': [(0, 0, reply_message)],
-                    })
+                    reply_message['tool_calls'] = tool
+                    reply_message['prompt_id'] = self.id
+
+                    tool_call = self.env['fastmcp.tool.call'].create_tool_call(tool)
+                    reply_message['response_tool_call_id'] = tool_call and tool_call.id or False
                     
-                    # In case if there are multiple tool_calls, init message
-                    reply_message['content'] = None
-                    reply_message['prompt_eval_count'] = 0
-                    reply_message['eval_count'] = 0
-                    reply_message['total_duration'] = 0
-                    
+                    tool_message_ids += self.env['litellm.prompt.message'].create(reply_message)    
             else:
-                reply_message['role'] = 'assistant'
                 self.write({
                     'response': reply,
                     'message_ids': [(0, 0, reply_message)],
                 })
+                
+            # Call tools
+            for tool_message in tool_message_ids:
+                if tool_message.response_tool_call_id:
+                    tool_message.response_tool_call_id.action_call_tool()
+                
             
             
         except Exception as e:

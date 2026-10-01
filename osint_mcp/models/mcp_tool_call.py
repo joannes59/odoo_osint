@@ -55,16 +55,32 @@ class FastMCPToolCall(models.Model):
     # ---------------------------------------------------------------------
     # Compute / constraints
     # ---------------------------------------------------------------------
-    @api.depends('tool_id.name', 'create_date')
+    @api.depends('tool_id.name')
     def _compute_display_name(self):
         for call in self:
-            date = call.create_date.strftime('%Y-%m-%d %H:%M') if call.create_date else _("New")
-            call.display_name = f"{call.tool_id.name or ''} - {date}"
+            call.display_name = f"{call.tool_id.name or ''}"
 
 
     # ---------------------------------------------------------------------
     # Helpers
     # ---------------------------------------------------------------------
+
+    @api.model
+    def create_tool_call(self, tool):
+        """ Create a tool call with json tool description returned by llm """
+
+        tool_vals = tool
+        tool_call = self.env['fastmcp.tool.call']
+        
+        if tool_vals.get('type', '?') == 'function':
+            function_name = tool_vals['function'].get('name', '?')
+            function = self.env['fastmcp.tool'].search([('name', '=', function_name)])
+            if len(function) == 1:
+                tool_call = self.env['fastmcp.tool.call'].create({
+                    'tool_id': function.id,
+                    'arguments': tool_vals['function'].get('arguments', {}),
+                    })
+        return tool_call
 
     @api.model
     def _run_async_call(self, server_url, apikey, tool_name, arguments, timeout=None):
@@ -116,7 +132,7 @@ class FastMCPToolCall(models.Model):
             if call._check_required_arguments():
             
                 if call.mcp_server_id.built_in:
-                    call._execute_built_in({})
+                    call._execute_built_in()
                 else:
                     call._execute_external()
                     
@@ -141,8 +157,6 @@ class FastMCPToolCall(models.Model):
         """ Call external MCP server """
         self.ensure_one()
         server = self.tool_id.mcp_server_id
-        print('--------self.arguments--------', self.arguments)
-        print('--------self.arguments--------', type(self.arguments))
 
         try:
             result = self._run_async_call(

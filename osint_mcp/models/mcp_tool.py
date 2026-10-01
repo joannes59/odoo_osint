@@ -26,8 +26,6 @@ class FastMCPTool(models.Model):
     
     parameter_ids = fields.One2many('fastmcp.tool.parameter', 'tool_id',
                                     string='Input Parameters')
-    
-    input_schema_pretty = fields.Text(string="Input Schema", compute="_json_pretty")
 
     call_ids = fields.One2many('fastmcp.tool.call', 'tool_id', string='Calls')
 
@@ -65,22 +63,6 @@ class FastMCPTool(models.Model):
             'target': 'current',
             'context': {'default_tool_id': self.id},
         }
-
-
-    @api.depends("input_schema")
-    def _json_pretty(self):
-        """ Return json in human readable text """
-        
-        for rec in self:
-            input_schema_pretty = ""
-            
-            if rec.input_schema:
-                input_schema_pretty = json.dumps(
-                        rec.input_schema,
-                        indent=4,
-                        ensure_ascii=False
-                    )
-            rec.input_schema_pretty = input_schema_pretty
     
     
     @api.model
