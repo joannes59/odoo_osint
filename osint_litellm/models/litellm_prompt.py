@@ -94,41 +94,56 @@ class LitellmPrompt(models.Model):
                 'content': self.message_system})
             
         for msg in self.message_ids:
-            messages.append({'role': msg.role, 'content': msg.content})
+            if msg.message_json:
+                messages.append(msg.message_json)
             
         return messages
     
     def save_question(self):
         """ Save the question of the user in messages """
         if self.question:
+            message_json = {
+                'role': 'user',
+                'content': self.question,
+            }
+            
             self.write({
                 'message_ids': [(0, 0, {
                     'role': 'user',
                     'content': self.question,
+                    'message_json': message_json,
                 })],
                 'question': False,
             })
         
-    def send(self, role='user'):
+    def send(self, role='user', loop=0, loop_max=5):
         """ Complete a prompt to ask llm response """
         self.ensure_one()
         try:
-            self.save_question()
+            if role == 'user':
+                self.save_question()
+                
+            if loop >= loop_max:
+                return "Number of iteration execed"
+                
+                
             start_time = time.time()
             
+            # Provider and model
             api_base = self.provider_id.host or None
             api_key = self.provider_id.get_apikey() or None
             model = (self.model_id.provider_id.litellm_provider + '/' + self.model_id.model).lower()
             keep_alive = (self.model_id.provider_id.litellm_provider == 'OLLAMA') and '5m' or None
             
-            self.message_system = self.message_system or self.generate_message_sytem()
-            
+            # message system and tools
+            if not self.message_system:
+                self.message_system = self.generate_message_sytem()  
             tools = self.get_tools() or None       
             tool_choice = tools and "auto" or None
             
-            messages = self.generate_messages()
-                                    
             # Ask LLM response
+            messages = self.generate_messages()
+            print('--litellm----completion--messages-----------', messages)
             response = litellm.completion(
                 api_base=api_base,
                 api_key=api_key,
@@ -138,49 +153,73 @@ class LitellmPrompt(models.Model):
                 tool_choice=tool_choice,
                 keep_alive=keep_alive,
                 )
-            
+            print('--litellm----completion--response-----------', response)
             # get llm response
-            reply = response.choices[0].message.content
+            message_json  = self.to_json(response.choices[0].message)
+            print('------message_json----------', message_json)
+
+            tool_calls = message_json.get('tool_calls')
+            content = message_json.get('content')
             usage = response.usage
-            tool_calls = response.choices[0].message.tool_calls
-            tool_message_ids = self.env['litellm.prompt.message']
+
                     
             # Save llm response in message_ids
             reply_message = {
+                'prompt_id': self.id,
                 'role': 'assistant',
-                'content': reply,
+                'content': content,
+                'message_json': message_json,
+
                 'prompt_eval_count': usage.prompt_tokens,
                 'eval_count': usage.total_tokens,
                 'total_duration': time.time() - start_time,
             }
-            
-            if tool_calls:
-                reply_message['prompt_eval_count'] = reply_message['prompt_eval_count'] / len(tool_calls)
-                reply_message['eval_count'] = reply_message['eval_count'] / len(tool_calls)
-                reply_message['total_duration'] = reply_message['total_duration'] / len(tool_calls)
-
-                for tool in tool_calls:
-                    reply_message['tool_call_id'] = tool.id
-                    reply_message['tool_calls'] = tool
-                    reply_message['prompt_id'] = self.id
-
-                    tool_call = self.env['fastmcp.tool.call'].create_tool_call(tool)
-                    reply_message['response_tool_call_id'] = tool_call and tool_call.id or False
-                    
-                    tool_message_ids += self.env['litellm.prompt.message'].create(reply_message)    
-            else:
-                self.write({
-                    'response': reply,
+            self.write({
+                    'response': content,
                     'message_ids': [(0, 0, reply_message)],
                 })
-                
-            # Call tools
-            for tool_message in tool_message_ids:
-                if tool_message.response_tool_call_id:
-                    tool_message.response_tool_call_id.action_call_tool()
-                
             
-            
+            # Tools call response message
+            if tool_calls:
+                tool_message_ids = self.env['litellm.prompt.message']
+                tool_message_vals = {'prompt_id': self.id}
+                tool_message_vals['role'] = 'tool'  
+
+                for tool in tool_calls:
+                    tool_message_vals['tool_call_id'] = tool.get('id')      
+
+                       
+                    tool_call = self.env['fastmcp.tool.call'].create_tool_call(tool)
+                    tool_message_vals['response_tool_call_id'] = tool_call.id
+                    
+                    tool_message_ids += self.env['litellm.prompt.message'].create(tool_message_vals)    
+                    
+                print('------tool_message_ids----------', tool_message_ids)
+
+                # Call tools
+                for tool_message in tool_message_ids:
+                    if tool_message.response_tool_call_id:
+                        tool_message.response_tool_call_id.action_call_tool()
+                    
+                        if tool_message.response_tool_call_id.state == 'success':
+                            tool_message.content = tool_message.response_tool_call_id.result_text
+                            tool_message_json = {
+                                'role': 'tool',
+                                'tool_call_id': tool_message.response_tool_call_id.tool_call_id,
+                                'content': tool_message.response_tool_call_id.result_text,
+                                
+                                }
+                            tool_message.message_json = tool_message_json
+                        else:
+                            tool_message.content = ''
+    
+                # recall llm with tool response in messages
+                if tool_message_ids:
+                    loop += 1
+                    print('--------recall llm with tool---------')
+                    self.send(role='tool', loop=loop)
+                    print('--------response llm with tool---------')
+
         except Exception as e:
             raise UserError("Failed to send prompt: %s" % str(e))
 

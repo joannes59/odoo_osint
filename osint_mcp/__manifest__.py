@@ -13,6 +13,7 @@
     'external_dependencies': {'python': ['mcp']},
     'data': [
         'security/ir.model.access.csv',
+        'data/fastmcp_tool_odoo.xml',
 
         'views/menu_views.xml',        
         'views/mcp_server_views.xml',

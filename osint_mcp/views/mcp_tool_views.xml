@@ -21,6 +21,11 @@
             <form string="MCP Tool">
                 <header>
                     <button name="action_new_call" type="object" string="Call tool"/>
+                    <button name="action_export_xml"
+                        type="object"
+                        string="XML Export"
+                        icon="fa-download"
+                        class="btn-primary"/>
                 </header>
                 <sheet>
                     <group>

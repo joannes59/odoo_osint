@@ -27,7 +27,7 @@
             <form>
                 <header>
                     <button name="action_call_tool" type="object" string="Call tool"
-                            class="btn-primary" invisible="state != 'draft'"/>
+                            class="btn-primary" />
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,success"/>
                 </header>

@@ -38,11 +38,8 @@ class LitellmSession(models.Model):
             
         # arch = view._get_combined_arch()
         # view = self.env["ir.ui.view"].browse(view_id)
-            
-        litellm_model = self.get_litellm_model()
-        
-        
-        prompt = self.with_context(agent_context=agent_context).get_litellm_prompt(litellm_model)
+
+        prompt = self.with_context(agent_context=agent_context).get_litellm_prompt()
         prompt.question = body
         answer = prompt.with_context(agent_context=agent_context).send()
         
@@ -66,17 +63,19 @@ class LitellmSession(models.Model):
     def get_internal_mcp(self):
         """ get default internal mcp """
         # Todo filter and select mcp server by context
-        odoo_mcp = self.env['fastmcp.server'].search([('name', '=', 'odoo')])
+        odoo_mcp = self.env['fastmcp.server'].search([('name', '=', 'Odoo')])
         return odoo_mcp
         
         
-    def get_litellm_prompt(self, litellm_model):
+    def get_litellm_prompt(self):
         """ Complete or Create prompt to ask llm """
         # TODO get previews prompt if needed by context
         message_system = self.get_system_skill()
         mcp_server = self.get_internal_mcp()
+        litellm_model = self.get_litellm_model()
         
         prompt = self.prompt_ids.create({
+            'session_id': self.id,
             'model_id': litellm_model.id,
             'message_system': message_system,
             'mcp_ids': mcp_server,
