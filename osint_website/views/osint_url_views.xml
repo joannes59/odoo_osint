@@ -75,5 +75,5 @@
               name="URLs"
               parent="menu_website_root"
               action="action_osint_url"
-              sequence="20"/>
+              sequence="50"/>
 </odoo>

@@ -32,31 +32,6 @@ domain = args.get('domain')
 
 record_ids = env[model_name].search(domain, limit=limit)
 result = record_ids.ids]]></field>
-        <field name="input_schema">{
-  "type": "object",
-  "required": [
-    "model",
-    "domain"
-  ],
-  "properties": {
-    "limit": {
-      "type": "integer",
-      "description": "Maximum number of records to return."
-    },
-    "model": {
-      "type": "string",
-      "description": "Technical name of the Odoo model, for example 'res.partner'."
-    },
-    "order": {
-      "type": "string",
-      "description": "Odoo sort order, for example 'name asc'."
-    },
-    "domain": {
-      "type": "array",
-      "description": "Odoo search domain used to filter records.\n\nA domain is a list of conditions. Each condition has the format:\n[field_name, operator, value]\n"
-    }
-  }
-}></field>
         <field name="enabled" eval="True"/>
     </record>
 

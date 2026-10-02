@@ -113,5 +113,10 @@
               action="fastmcp_tool_call_action"
               parent="osint_mcp.menu_mcp_root"
               sequence="50"/>
-
+              
+    <menuitem id="fastmcp_tool_call_menu2"
+              name="Call"
+              parent="osint_mcp.menu_mcp"
+              action="fastmcp_tool_call_action"
+              sequence="20"/>
 </odoo>

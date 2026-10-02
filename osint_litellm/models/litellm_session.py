@@ -63,7 +63,7 @@ class LitellmSession(models.Model):
     def get_internal_mcp(self):
         """ get default internal mcp """
         # Todo filter and select mcp server by context
-        odoo_mcp = self.env['fastmcp.server'].search([('name', '=', 'Odoo')])
+        odoo_mcp = self.env['fastmcp.server'].search([('name', '=', 'odoo')])
         return odoo_mcp
         
         

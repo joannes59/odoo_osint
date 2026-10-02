@@ -121,4 +121,10 @@
               parent="osint_mcp.menu_mcp_root"
               action="action_mcp_tool"
               sequence="20"/>
+              
+    <menuitem id="menu_mcp_tool2"
+              name="Tools"
+              parent="osint_mcp.menu_mcp"
+              action="action_mcp_tool"
+              sequence="10"/>
 </odoo>

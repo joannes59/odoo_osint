@@ -101,4 +101,10 @@
               parent="menu_litellm_root"
               action="action_litellm_prompt"
               sequence="40"/>
+              
+    <menuitem id="menu_litellm_prompt2"
+              name="Prompts"
+              parent="menu_litellm"
+              action="action_litellm_prompt"
+              sequence="10"/>
 </odoo>
