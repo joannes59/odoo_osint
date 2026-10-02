@@ -21,6 +21,11 @@
             <form string="MCP Tool">
                 <header>
                     <button name="action_new_call" type="object" string="Call tool"/>
+                    <button name="action_export_xml"
+                        type="object"
+                        string="XML Export"
+                        icon="fa-download"
+                        class="btn-primary"/>
                 </header>
                 <sheet>
                     <group>
@@ -41,7 +46,7 @@
                             <field name="description" widget="text"/>
                         </page>
                         <page string="Input Schema" name="input_schema">
-                            <field name="input_schema_pretty" widget="text"/>
+                            <field name="input_schema" widget="json_readonly"/>
                         </page>
                         <page string="Generator" name="generator">
                             <group>
@@ -81,7 +86,7 @@
                             <field name="code" widget="ace" options="{'mode': 'python'}"/>
                         </page>
                         <page string="Output Schema" name="output_schema">
-                            <field name="output_schema" widget="text"/>
+                            <field name="output_schema" widget="json_readonly"/>
                         </page>
                         <page string="Annotations" name="annotations">
                             <field name="annotations" widget="text"/>
@@ -116,4 +121,10 @@
               parent="osint_mcp.menu_mcp_root"
               action="action_mcp_tool"
               sequence="20"/>
+              
+    <menuitem id="menu_mcp_tool2"
+              name="Tools"
+              parent="osint_mcp.menu_mcp"
+              action="action_mcp_tool"
+              sequence="10"/>
 </odoo>

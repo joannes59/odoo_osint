@@ -6,6 +6,7 @@ import re
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 from odoo import Command
+from jinja2 import Template
 
 class OsintAgentSkill(models.Model):
     _name = 'osint.agent.skill'
@@ -33,6 +34,32 @@ class OsintAgentSkill(models.Model):
         string='Parameters',
         store = True
     )
+
+    def build_skill(self):
+        """ Build prompt with user parameters """
+        self.ensure_one()
+        if self.description:
+            
+
+            template = Template(self.description)
+
+            company_name = self.env.company.name
+            user_name = self.env.user.name
+            user_language = self.env.user.lang or 'English'
+            
+            lang = self.env['res.lang'].search([('code', '=', self.env.user.lang)], limit=1)
+            user_language = lang and lang.name or 'English'
+            
+            
+            message_system = template.render(
+                company_name=company_name,
+                user_name=user_name,
+                user_language=user_language,
+            )
+        else:
+            message_system = ''
+            
+        return message_system
 
     @api.depends('description')
     def _compute_description_pretty(self):
@@ -77,5 +104,5 @@ class OsintAgentSkill(models.Model):
                 
                 
             
-    # self.env[model_name].check_access("write")
+
     

@@ -20,7 +20,7 @@ class FastMCPToolCall(models.Model):
     _order = 'id desc'
 
     tool_id = fields.Many2one(
-        'fastmcp.tool', string='Tool', required=True, index=True,
+        'fastmcp.tool', string='Tool', index=True,
         ondelete='cascade',
     )
     mcp_server_id = fields.Many2one(
@@ -31,6 +31,7 @@ class FastMCPToolCall(models.Model):
     input_schema = fields.Json(related='tool_id.input_schema', readonly=True)
 
     # --- Call parameters -------------------------------------------------
+    tool_call_id = fields.Char('Tool call ID')
     arguments = fields.Json(
         'Arguments (JSON)', 
         help="JSON object passed as `arguments` to call_tool.",
@@ -55,16 +56,57 @@ class FastMCPToolCall(models.Model):
     # ---------------------------------------------------------------------
     # Compute / constraints
     # ---------------------------------------------------------------------
-    @api.depends('tool_id.name', 'create_date')
+    @api.depends('tool_id.name')
     def _compute_display_name(self):
         for call in self:
-            date = call.create_date.strftime('%Y-%m-%d %H:%M') if call.create_date else _("New")
-            call.display_name = f"{call.tool_id.name or ''} - {date}"
+            call.display_name = f"{call.tool_id.name or ''}"
 
 
     # ---------------------------------------------------------------------
     # Helpers
     # ---------------------------------------------------------------------
+
+    @api.model
+    def create_tool_call(self, tool):
+        """ Create a tool call with json tool description returned by llm """
+
+        tool_vals = tool
+        tool_call = self.env['fastmcp.tool.call']
+        
+        if tool_vals.get('type', '?') == 'function':
+            function_name = tool_vals['function'].get('name', '?')
+            tool_call_id = tool_vals.get('id', '')
+            function = self.env['fastmcp.tool'].search([('name', '=', function_name)])
+            
+            
+            if len(function) == 1:
+                tool_call_vals = {'tool_id': function.id, 'tool_call_id': tool_call_id}
+                try:
+                    arguments_txt = tool_vals['function'].get('arguments')
+                    if not arguments_txt:
+                        arguments = {}
+                    elif type(arguments_txt) == str:
+                        arguments = json.loads(arguments_txt)
+                    elif type(arguments_txt) == dict:
+                        arguments = arguments_txt
+                    else:
+                        arguments = {}
+                        tool_call_vals['state'] = 'error'
+                        tool_call_vals['error_message'] = f'JSON argument error:{arguments_txt}'
+                        
+                    tool_call_vals['arguments'] = arguments
+
+                except json.JSONDecodeError as e:
+                    tool_call_vals['arguments'] = {}
+                    tool_call_vals['state'] = 'error'
+                    tool_call_vals['error_message'] = f'JSON argument error:{e}'
+                    
+            else:
+                tool_call_vals['state'] = 'error'
+                tool_call_vals['error_message'] = f'Tool not finding: {function_name}'
+                
+            tool_call = self.env['fastmcp.tool.call'].create(tool_call_vals)
+        return tool_call
 
     @api.model
     def _run_async_call(self, server_url, apikey, tool_name, arguments, timeout=None):
@@ -113,10 +155,11 @@ class FastMCPToolCall(models.Model):
         for call in self:
             start = time.monotonic()
             call.call_date = fields.Datetime.now()
-            if call._check_required_arguments():
+            
+            if call.tool_id and call._check_required_arguments():
             
                 if call.mcp_server_id.built_in:
-                    call._execute_built_in({})
+                    call._execute_built_in()
                 else:
                     call._execute_external()
                     
@@ -141,8 +184,6 @@ class FastMCPToolCall(models.Model):
         """ Call external MCP server """
         self.ensure_one()
         server = self.tool_id.mcp_server_id
-        print('--------self.arguments--------', self.arguments)
-        print('--------self.arguments--------', type(self.arguments))
 
         try:
             result = self._run_async_call(
@@ -190,14 +231,14 @@ class FastMCPToolCall(models.Model):
             try:
                 safe_eval(
                     code,
-                    globals_dict=eval_context,
+                    context=eval_context,
                     mode='exec',
-                    nocopy=True,
                 )
             except Exception as e:
                 self.state = 'error'
                 self.error_message = str(e)
             else:            
-                self.result = eval_context.get('result', {})
-                self.state = 'done'
+                self.result_text = str(eval_context.get('result', {}))
+                self.structured_content = eval_context.get('result', {})
+                self.state = 'success'
     

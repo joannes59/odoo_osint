@@ -4,6 +4,8 @@
 from odoo import api, fields, models
 import json
 from jsonschema import Draft7Validator
+import base64
+from xml.sax.saxutils import escape
 from odoo.tools.safe_eval import test_python_expr
 from odoo.exceptions import ValidationError
 
@@ -26,8 +28,6 @@ class FastMCPTool(models.Model):
     
     parameter_ids = fields.One2many('fastmcp.tool.parameter', 'tool_id',
                                     string='Input Parameters')
-    
-    input_schema_pretty = fields.Text(string="Input Schema", compute="_json_pretty")
 
     call_ids = fields.One2many('fastmcp.tool.call', 'tool_id', string='Calls')
 
@@ -65,22 +65,6 @@ class FastMCPTool(models.Model):
             'target': 'current',
             'context': {'default_tool_id': self.id},
         }
-
-
-    @api.depends("input_schema")
-    def _json_pretty(self):
-        """ Return json in human readable text """
-        
-        for rec in self:
-            input_schema_pretty = ""
-            
-            if rec.input_schema:
-                input_schema_pretty = json.dumps(
-                        rec.input_schema,
-                        indent=4,
-                        ensure_ascii=False
-                    )
-            rec.input_schema_pretty = input_schema_pretty
     
     
     @api.model
@@ -261,3 +245,86 @@ class FastMCPTool(models.Model):
             "arguments": arguments,
         }
         
+
+    # ------------------------------------------------------------------
+    # Export XML
+    # ------------------------------------------------------------------
+    def _xml_field(self, name, value, indent='        ', as_json=False):
+        """Retourne une ligne <field> ou '' si la valeur est vide."""
+        if value in (False, None, '', {}, []):
+            return ''
+        if as_json:
+            value = json.dumps(value, ensure_ascii=False, indent=2)
+        return f'{indent}<field name="{name}"><![CDATA[{value}]]></field>\n'
+
+    def _get_xml_id_name(self, record, prefix):
+        """Génère un identifiant XML stable (sans espaces ni caractères spéciaux)."""
+        safe = ''.join(c if c.isalnum() else '_' for c in (record.name or ''))
+        return f'{prefix}_{safe}_{record.id}'.lower()
+
+    def _generate_xml(self):
+        self.ensure_one()
+        tool_xid = self._get_xml_id_name(self, 'tool')
+        server = self.mcp_server_id
+
+        lines = ['<?xml version="1.0" encoding="utf-8"?>', '<odoo>']
+
+        # --- Outil ---
+        lines.append(f'    <record id="{tool_xid}" model="fastmcp.tool">')
+        lines.append(f'        <field name="name">{escape(self.name or "")}</field>')
+        lines.append(f'        <field name="mcp_server_id" ref="{escape(self._server_ref(server))}"/>')
+        for fname in ('title', 'description', 'code'):
+            line = self._xml_field(fname, self[fname])
+            if line:
+                lines.append(line.rstrip('\n'))
+        for fname in ('input_schema', 'output_schema', 'annotations'):
+            line = self._xml_field(fname, self[fname], as_json=True)
+            if line:
+                lines.append(line.rstrip('\n'))
+        lines.append(f'        <field name="enabled" eval="{bool(self.enabled)}"/>')
+        lines.append('    </record>')
+
+        # --- Paramètres ---
+        for param in self.parameter_ids.sorted(lambda p: (p.sequence, p.id)):
+            p_xid = self._get_xml_id_name(param, 'param')
+            lines.append('')
+            lines.append(f'    <record id="{p_xid}" model="fastmcp.tool.parameter">')
+            lines.append(f'        <field name="tool_id" ref="{tool_xid}"/>')
+            lines.append(f'        <field name="name">{escape(param.name or "")}</field>')
+            lines.append(f'        <field name="type">{param.type}</field>')
+            line = self._xml_field('description', param.description)
+            if line:
+                lines.append(line.rstrip('\n'))
+            lines.append(f'        <field name="required" eval="{bool(param.required)}"/>')
+            lines.append(f'        <field name="sequence">{param.sequence or 0}</field>')
+            lines.append('    </record>')
+
+        lines.append('</odoo>')
+        return '\n'.join(lines) + '\n'
+
+    def _server_ref(self, server):
+        """Référence XML ID du serveur (existant, sinon généré à la volée)."""
+        xmlid = server.get_external_id().get(server.id)
+        return xmlid or f'__export__.fastmcp_server_{server.id}'
+
+    def action_export_xml(self):
+        """Génère le fichier XML et déclenche son téléchargement."""
+        self.ensure_one()
+        xml_content = self._generate_xml()
+
+        filename = ''.join(
+            c if c.isalnum() or c in '-_' else '_' for c in (self.name or 'tool')
+        )
+        attachment = self.env['ir.attachment'].create({
+            'name': f'fastmcp_tool_{filename}.xml',
+            'type': 'binary',
+            'datas': base64.b64encode(xml_content.encode('utf-8')),
+            'mimetype': 'application/xml',
+            'res_model': self._name,
+            'res_id': self.id,
+        })
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
+        }

@@ -21,6 +21,8 @@ class LitellmPromptMessage(models.Model):
     sequence = fields.Integer('Sequence', default=100)
     prompt_id = fields.Many2one('litellm.prompt', string='Prompt',
                                 required=True, ondelete='cascade')
+    
+    message_json = fields.Json('Message (JSON)')
 
     role = fields.Selection([
         ('system', 'System'),
@@ -31,6 +33,7 @@ class LitellmPromptMessage(models.Model):
     ], string='Role', required=True, default='user')
     
     content = fields.Text('Content')
+    reasoning_content = fields.Text('reasoning_content')
     
     prompt_eval_count = fields.Float("Token in")
     eval_count = fields.Float("Total Token")
@@ -38,7 +41,17 @@ class LitellmPromptMessage(models.Model):
     total_duration = fields.Float("Duration")
     
     tool_call_id = fields.Char('Tool call ID')
-    tool_calls = fields.Json('Tool calls')
+    tool_calls = fields.Json('Tool calls (JSON)')
+    response_tool_call_id = fields.Many2one('fastmcp.tool.call', string="Tool call")
+    
+    
+    
+
+            
+                
+        
+        
+        
     
 
         

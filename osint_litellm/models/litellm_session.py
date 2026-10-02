@@ -38,11 +38,8 @@ class LitellmSession(models.Model):
             
         # arch = view._get_combined_arch()
         # view = self.env["ir.ui.view"].browse(view_id)
-            
-        litellm_model = self.get_litellm_model()
-        
-        
-        prompt = self.with_context(agent_context=agent_context).get_litellm_prompt(litellm_model)
+
+        prompt = self.with_context(agent_context=agent_context).get_litellm_prompt()
         prompt.question = body
         answer = prompt.with_context(agent_context=agent_context).send()
         
@@ -50,15 +47,38 @@ class LitellmSession(models.Model):
     
     def get_litellm_model(self):
         """ return the litellm model to use """
+        # TODO filter and select model by context
         
-        litellm_model = self.env['litellm.model'].search([], order='sequence', limit=1)
+        litellm_model = self.env['litellm.model'].search([], order='sequence asc', limit=1)
         return litellm_model
         
-    def get_litellm_prompt(self, litellm_model):
+    def get_system_skill(self):
+        """ return system message on create prompt """
+        # TODO filter and select skill by context
+        skill_system = self.env['osint.agent.skill'].search(
+            [('role', '=', 'system')], order='sequence', limit=1)
+        message_system = skill_system.build_skill()
+        return message_system
+        
+    def get_internal_mcp(self):
+        """ get default internal mcp """
+        # Todo filter and select mcp server by context
+        odoo_mcp = self.env['fastmcp.server'].search([('name', '=', 'odoo')])
+        return odoo_mcp
+        
+        
+    def get_litellm_prompt(self):
         """ Complete or Create prompt to ask llm """
+        # TODO get previews prompt if needed by context
+        message_system = self.get_system_skill()
+        mcp_server = self.get_internal_mcp()
+        litellm_model = self.get_litellm_model()
         
         prompt = self.prompt_ids.create({
+            'session_id': self.id,
             'model_id': litellm_model.id,
+            'message_system': message_system,
+            'mcp_ids': mcp_server,
                 })
         return prompt
                

@@ -27,7 +27,7 @@
             <form>
                 <header>
                     <button name="action_call_tool" type="object" string="Call tool"
-                            class="btn-primary" invisible="state != 'draft'"/>
+                            class="btn-primary" />
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,success"/>
                 </header>
@@ -72,12 +72,12 @@
                             <separator string="Structured content"
                                        invisible="not structured_content"/>
                             <field name="structured_content" nolabel="1"
-                                   widget="ace" options="{'mode': 'js'}"
+                                   widget="json_readonly" 
                                    invisible="not structured_content"/>
                         </page>
                         <page string="Raw response" name="raw" invisible="state == 'draft'">
                             <field name="raw_response" nolabel="1"
-                                   widget="ace" options="{'mode': 'js'}"/>
+                                   widget="json_readonly" />
                         </page>
                     </notebook>
                 </sheet>
@@ -113,5 +113,10 @@
               action="fastmcp_tool_call_action"
               parent="osint_mcp.menu_mcp_root"
               sequence="50"/>
-
+              
+    <menuitem id="fastmcp_tool_call_menu2"
+              name="Call"
+              parent="osint_mcp.menu_mcp"
+              action="fastmcp_tool_call_action"
+              sequence="20"/>
 </odoo>

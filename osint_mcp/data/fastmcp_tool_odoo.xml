@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fastmcp_server_odoo" model="fastmcp.server">
+        <field name="name">Odoo</field>
+        <field name="built_in" eval="True"/>
+    </record>
+        
+
+    <record id="tool_odoo_record_search_11" model="fastmcp.tool">
+        <field name="name">odoo_record_search</field>
+        <field name="mcp_server_id" ref="fastmcp_server_odoo"/>
+        <field name="title"><![CDATA[Search odoo database record]]></field>
+        <field name="description"><![CDATA[Search for records in an Odoo model using an Odoo domain.
+
+Use this tool when you need to find records matching specific conditions.
+The model parameter must be the technical Odoo model name, such as
+'res.partner', 'sale.order', or 'account.move'...etc
+
+The domain is a list of search conditions. Each condition has the format:
+[field_name, operator, value]
+
+The tool returns the IDs of matching records. Use the limit parameter
+to control the maximum number of results and offset for pagination.
+Use order to specify the sort order.
+
+Do not invent field names. Only use fields that exist on the specified
+Odoo model.]]></field>
+        <field name="code"><![CDATA[model_name = args.get('model')
+limit = args.get('limit') or None
+domain = args.get('domain')
+
+record_ids = env[model_name].search(domain, limit=limit)
+result = record_ids.ids]]></field>
+        <field name="enabled" eval="True"/>
+    </record>
+
+    <record id="param_model_2" model="fastmcp.tool.parameter">
+        <field name="tool_id" ref="tool_odoo_record_search_11"/>
+        <field name="name">model</field>
+        <field name="type">string</field>
+        <field name="description"><![CDATA[Technical name of the Odoo model, for example 'res.partner'.]]></field>
+        <field name="required" eval="True"/>
+        <field name="sequence">0</field>
+    </record>
+
+    <record id="param_domain_1" model="fastmcp.tool.parameter">
+        <field name="tool_id" ref="tool_odoo_record_search_11"/>
+        <field name="name">domain</field>
+        <field name="type">array</field>
+        <field name="description"><![CDATA[Odoo search domain used to filter records.
+
+A domain is a list of conditions. Each condition has the format:
+[field_name, operator, value]
+]]></field>
+        <field name="required" eval="True"/>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="param_limit_3" model="fastmcp.tool.parameter">
+        <field name="tool_id" ref="tool_odoo_record_search_11"/>
+        <field name="name">limit</field>
+        <field name="type">integer</field>
+        <field name="description"><![CDATA[Maximum number of records to return.]]></field>
+        <field name="required" eval="False"/>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="param_order_4" model="fastmcp.tool.parameter">
+        <field name="tool_id" ref="tool_odoo_record_search_11"/>
+        <field name="name">order</field>
+        <field name="type">string</field>
+        <field name="description"><![CDATA[Odoo sort order, for example 'name asc'.]]></field>
+        <field name="required" eval="False"/>
+        <field name="sequence">3</field>
+    </record>
+</odoo>
